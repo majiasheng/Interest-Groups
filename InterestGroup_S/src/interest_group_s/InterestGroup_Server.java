@@ -1,6 +1,8 @@
 
 package interest_group_s;
 
+import com.fasterxml.jackson.core.*;
+
 /**
  *
  * @author majiasheng
