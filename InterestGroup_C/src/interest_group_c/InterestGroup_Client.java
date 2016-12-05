@@ -67,16 +67,4 @@ public class InterestGroup_Client {
      */
     void handleCMD(String[] args) {}
     
-    void login() {}
-    
-    void help() {}
-    
-    void ag() {}
-    
-    void sg() {}
-    
-    void rg() {}
-    
-    void logout() {}
-    
 }
