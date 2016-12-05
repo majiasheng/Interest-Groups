@@ -63,6 +63,8 @@ public class InterestGroup_Client {
     /**
      * Handlers command line arguments
      */
-    void handleCMD(String[] args) {}
+    void handleCMD(String[] args) {
+        
+    }
     
 }
