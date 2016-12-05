@@ -1,4 +1,4 @@
-// package interest_group_c;
+ package interest_group_c;
 
 /**
  *
@@ -21,6 +21,8 @@ public class InterestGroup_Client {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.out.println("test merge command");
+
         int portNum = 6666;
 
             try{
