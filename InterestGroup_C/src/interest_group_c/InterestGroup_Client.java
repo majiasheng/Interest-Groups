@@ -22,11 +22,6 @@ public class InterestGroup_Client {
      */
     void handleCMD(String[] args) {}
     
-    /**
-     * Updates program info on every client change requests
-     */
-    void update() {}
-    
     void login() {}
     
     void help() {}

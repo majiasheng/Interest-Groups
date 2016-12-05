@@ -19,8 +19,14 @@ public class InterestGroup_Server {
     public static void main(String[] args) {
         // TODO code application logic here
     }
-    
-    void login_handler() {}
+	
+	/**
+     * Updates program info on every client change requests
+	*/
+	void update() {}
+		
+
+	void login_handler() {}
 	
 	/****************************************
 					ag
