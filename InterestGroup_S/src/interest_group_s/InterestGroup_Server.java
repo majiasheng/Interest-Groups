@@ -23,65 +23,79 @@ public class InterestGroup_Server {
 	/**
      * Updates program info on every client change requests
 	*/
-	void update() {}
+	static void update() {}
 		
 
-	void login_handler() {}
+	static void login_handler() {}
 	
 	/****************************************
-					ag
+					ag - Ruoping
 	****************************************/
 	/** 
 	 * lists all existing groups, a default number of groups at a time 
 	 */
-    void ag_handler() {}
+    static void ag_handler() {}
 	
 	/** 
 	 * lists N groups at a time
 	 */
-	void ag_handler(int N);
-	
-	/****************************************
-					sg
-	****************************************/
-	void sg_handler() {}
+	static void ag_handler(int N);
 
-	
-	/****************************************
-					rg
-	****************************************/
-	void rg_handler() {}
-		
-	/****************************************
-				SUB COMMNADS
-	****************************************/
 	/**
 	 * - subscribe to groups
 	 */
-	void s_handler() {}
+	static void s_handler_ag() {}
 
 	/** 
 	 *	unsubscribe
 	 */
-	void u_handler() {}
+	static void u_handler_ag() {}
 	
 	/** 
 	 *	lists the next N discussion groups
 	 */
-	void n_handler() {}
+	static void n_handler_ag() {}
 	
 	/** 
 	 *	exit from ag command
 	 */
-	void q_handler() {}
+	static void q_handler_ag() {}
+	
+	/****************************************
+					sg - Liwen
+	****************************************/
+	static void sg_handler() {}
 	
 	/** 
 	 *	marks a post as read
 	 */	
-	void r_handler() {} 
-	
+	static void r_handler_sg() {} 
+
+	/** 
+	 *	lists the next N discussion groups
+	 */	
+	static void n_handler_sg() {} 
+
 	/** 
 	 *	post to the group
 	 */	
-	void p_handler() {} 
+	static void p_handler_sg() {} 
+
+	/** 
+	 *	exit from ag command
+	 */
+	static void q_handler_sg() {}
+	
+	/****************************************
+					rg - Jia-Sheng
+	****************************************/
+	static void rg_handler() {}
+
+	/****************************************
+				OTHER FUNCTIONS
+	****************************************/
+	
+	void createUser() {}
+
+	
 }

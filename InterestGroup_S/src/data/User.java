@@ -5,10 +5,10 @@ package data;
  * @author majiasheng
  */
 public class User {
-    private long id;
+    private int id;
     private String name;
 
-    public User(long id) {
+    public User(int id) {
 
     }
 }
