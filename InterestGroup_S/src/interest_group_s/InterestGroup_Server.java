@@ -21,11 +21,61 @@ public class InterestGroup_Server {
     }
     
     void login_handler() {}
-    
+	
+	/****************************************
+					ag
+	****************************************/
+	/** 
+	 * lists all existing groups, a default number of groups at a time 
+	 */
     void ag_handler() {}
-    
-    void sg_handler() {}
-    
-    void rg_handler() {}
-    
+	
+	/** 
+	 * lists N groups at a time
+	 */
+	void ag_handler(int N);
+	
+	/****************************************
+					sg
+	****************************************/
+	void sg_handler() {}
+
+	
+	/****************************************
+					rg
+	****************************************/
+	void rg_handler() {}
+		
+	/****************************************
+				SUB COMMNADS
+	****************************************/
+	/**
+	 * - subscribe to groups
+	 */
+	void s_handler() {}
+
+	/** 
+	 *	unsubscribe
+	 */
+	void u_handler() {}
+	
+	/** 
+	 *	lists the next N discussion groups
+	 */
+	void n_handler() {}
+	
+	/** 
+	 *	exit from ag command
+	 */
+	void q_handler() {}
+	
+	/** 
+	 *	marks a post as read
+	 */	
+	void r_handler() {} 
+	
+	/** 
+	 *	post to the group
+	 */	
+	void p_handler() {} 
 }
