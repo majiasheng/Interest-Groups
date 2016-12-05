@@ -17,7 +17,6 @@ public class InterestGroup_Server {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
     }
 	
 	/**
@@ -39,7 +38,7 @@ public class InterestGroup_Server {
 	/** 
 	 * lists N groups at a time
 	 */
-	static void ag_handler(int N);
+	static void ag_handler(int N){};
 
 	/**
 	 * - subscribe to groups
