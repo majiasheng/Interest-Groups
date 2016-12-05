@@ -41,6 +41,8 @@ public class client{
                     System.out.println(str);
                 }
             }
-        }catch (Exception e) {}
+        }catch (Exception e) {
+
+        }
     }
 }
