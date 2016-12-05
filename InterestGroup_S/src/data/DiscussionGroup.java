@@ -13,6 +13,7 @@ import java.util.ArrayList;
  */
 public class DiscussionGroup {
 
+	private int id;
 	private String name;
 
 	private ArrayList<User> users;

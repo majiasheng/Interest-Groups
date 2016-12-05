@@ -85,34 +85,34 @@ public class InterestGroup_Server {
      * Updates program info on every client change requests
 	*/
 	void update() {}
-		
+
 
 	void login_handler() {}
-	
+
 	/****************************************
 					ag
 	****************************************/
-	/** 
-	 * lists all existing groups, a default number of groups at a time 
+	/**
+	 * lists all existing groups, a default number of groups at a time
 	 */
     void ag_handler() {}
-	
-	/** 
+
+	/**
 	 * lists N groups at a time
 	 */
 	void ag_handler(int N){};
-	
+
 	/****************************************
 					sg
 	****************************************/
 	void sg_handler() {}
 
-	
+
 	/****************************************
 					rg
 	****************************************/
 	void rg_handler() {}
-		
+
 	/****************************************
 				SUB COMMNADS
 	****************************************/
@@ -121,28 +121,28 @@ public class InterestGroup_Server {
 	 */
 	void s_handler() {}
 
-	/** 
+	/**
 	 *	unsubscribe
 	 */
 	void u_handler() {}
-	
-	/** 
+
+	/**
 	 *	lists the next N discussion groups
 	 */
 	void n_handler() {}
-	
-	/** 
+
+	/**
 	 *	exit from ag command
 	 */
 	void q_handler() {}
-	
-	/** 
+
+	/**
 	 *	marks a post as read
-	 */	
-	void r_handler() {} 
-	
-	/** 
+	 */
+	void r_handler() {}
+
+	/**
 	 *	post to the group
-	 */	
-	void p_handler() {} 
+	 */
+	void p_handler() {}
 }
