@@ -2,6 +2,7 @@
 package interest_group_s;
 
 import com.fasterxml.jackson.core.*;
+import data.DiscussionGroup;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -9,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
@@ -21,10 +23,21 @@ import java.util.StringTokenizer;
  */
 public class InterestGroup_Server {
 
+	private ArrayList<DiscussionGroup> groups;
+
+	public InterestGroup_Server() {
+		/* initialize discussion group array */
+		groups = new ArrayList<>();
+
+
+	}
+
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+
 		try {
 
 			ServerSocket s = new ServerSocket(6666);
@@ -82,6 +95,16 @@ public class InterestGroup_Server {
 
 
 	}
+
+    	//TODO: spin and listen for client request
+
+
+    /**
+     * Handles the command by calling corresponding handlers
+     */
+    static void handleCMD(String cmd) {
+    	
+    }
 	
 	/**
      * Updates program info on every client change requests
@@ -145,14 +168,79 @@ public class InterestGroup_Server {
 	static void p_handler_sg() {} 
 
 	/** 
-	 *	exit from ag command
+	 *	exit from sg command
 	 */
 	static void q_handler_sg() {}
 	
 	/****************************************
-					rg - Jia-Sheng
+					rg - Jia Sheng
 	****************************************/
-	static void rg_handler() {}
+
+
+	/**
+	 * read group
+	 */
+	static void rg_handler(String gname) {
+		/* unread (new) posts should be displayed first*/
+		DiscussionGroup g;
+		g = getGroupByName(gname);
+
+	}
+
+	static void rg_handler(String gname, int N) {
+
+		
+	}
+
+	static void id_handler_rg() {
+
+	}
+
+	/**
+ 	 * lists the next N posts. 
+ 	 * If all posts are displayed, the program exits from the rg command mode
+ 	 */
+	static void n_id_handler_rg(int N) {
+
+	}
+
+ 	/**
+ 	 * would quit displaying the post content. 
+ 	 * The list of posts before opening the post is shown 
+ 	 * again with the post just opened marked as read.
+ 	 */
+	static void q_id_handler_rg() {
+
+	}
+	
+	/** 
+	 * marks post in range of h to t as read
+	 */	
+	static void r_handler_rg(int h, int t) {
+
+	} 
+
+	/** 
+	 *	lists the next N discussion groups
+	 */	
+	static void n_handler_rg() {} 
+
+	/** 
+	 *	post to the group
+	 */	
+	static void p_handler_rg() {} 
+
+	/** 
+	 *	exit from rg command
+	 */
+	static void q_handler_rg() {}
+
+	/**
+	 * Returns the group specified by gname
+	 */
+	static DiscussionGroup getGroupByName(String gname) {
+
+	}
 
 	/****************************************
 				OTHER FUNCTIONS

@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b6299ce5-7a34-4d92-be44-2f52f08601c1" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/InterestGroup_S/src/interest_group_s/InterestGroup_Server.class" afterPath="$PROJECT_DIR$/InterestGroup_S/src/interest_group_s/InterestGroup_Server.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/client.class" afterPath="$PROJECT_DIR$/out/production/client.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/interest_group_s/InterestGroup_Server.class" afterPath="$PROJECT_DIR$/out/production/interest_group_s/InterestGroup_Server.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/server.class" afterPath="$PROJECT_DIR$/out/production/server.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/InterestGroup_S/src/data/Constants.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/InterestGroup_C/src/client.java" afterPath="$PROJECT_DIR$/InterestGroup_C/src/client.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/InterestGroup_C/src/interest_group_c/InterestGroup_Client.java" afterPath="$PROJECT_DIR$/InterestGroup_C/src/interest_group_c/InterestGroup_Client.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/InterestGroup_S/src/interest_group_s/InterestGroup_Server.java" afterPath="$PROJECT_DIR$/InterestGroup_S/src/interest_group_s/InterestGroup_Server.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/InterestGroup_S/src/server.java" afterPath="$PROJECT_DIR$/InterestGroup_S/src/server.java" />
     </list>
     <ignored path="Group Project.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,7 +42,7 @@
         <entry file="file://$PROJECT_DIR$/InterestGroup_C/src/interest_group_c/InterestGroup_Client.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="420">
-              <caret line="33" column="45" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
+              <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -58,11 +53,21 @@
       <file leaf-file-name="InterestGroup_Server.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/InterestGroup_S/src/interest_group_s/InterestGroup_Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="39" column="16" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
+            <state relative-caret-position="-960">
+              <caret line="25" column="18" selection-start-line="25" selection-start-column="18" selection-end-line="25" selection-end-column="18" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DiscussionGroup.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/InterestGroup_S/src/data/DiscussionGroup.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -99,8 +104,8 @@
       <list>
         <option value="$PROJECT_DIR$/InterestGroup_C/src/client.java" />
         <option value="$PROJECT_DIR$/InterestGroup_S/src/server.java" />
-        <option value="$PROJECT_DIR$/InterestGroup_S/src/interest_group_s/InterestGroup_Server.java" />
         <option value="$PROJECT_DIR$/InterestGroup_C/src/interest_group_c/InterestGroup_Client.java" />
+        <option value="$PROJECT_DIR$/InterestGroup_S/src/interest_group_s/InterestGroup_Server.java" />
       </list>
     </option>
   </component>
@@ -902,17 +907,25 @@
     <entry file="file://$PROJECT_DIR$/InterestGroup_C/src/interest_group_c/InterestGroup_Client.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="420">
-          <caret line="33" column="45" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
+          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/InterestGroup_S/src/data/DiscussionGroup.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/InterestGroup_S/src/interest_group_s/InterestGroup_Server.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="39" column="16" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
+        <state relative-caret-position="-960">
+          <caret line="25" column="18" selection-start-line="25" selection-start-column="18" selection-end-line="25" selection-end-column="18" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
