@@ -40,7 +40,7 @@ public class server {
 //                    } else {
                         // match user ID with existing IDs. if fails to match, create a new user
 //                        File userDataFile = new File("Group Project/InterestGroup_S/Users/user_info.json");
-                        File userDataFile = new File("../user_info.json");
+                        File userDataFile = new File("/Users/jiashengma/Desktop/CSE310_FP/310fp_repo/InterestGroups/InterestGroup_S/Users");
 
 //                        Path path = Paths.get("Group Project/InterestGroup_S/Users");
 //                        File file = new File("Group Project/InterestGroup_S/Users/1111.json");

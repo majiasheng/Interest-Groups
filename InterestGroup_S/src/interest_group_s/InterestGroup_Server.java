@@ -1,6 +1,7 @@
 package interest_group_s;
 
 import com.fasterxml.jackson.core.*;
+import data.Constants;
 import data.DiscussionGroup;
 
 import java.util.ArrayList;
@@ -36,8 +37,12 @@ public class InterestGroup_Server {
 	/**
 	 * Handles the command by calling corresponding handlers
 	 */
-	static void handleCMD(String cmd) {
-
+	static void handleCMD(String command) {
+            if(command.equals(Constants.LOGOUT)){
+            // send server a logout request 
+            } else if(command.equals(Constants.LOGIN)) {
+            // send server a login request 
+            }
 	}
 
 	/**
