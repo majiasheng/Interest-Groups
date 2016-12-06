@@ -5,7 +5,10 @@
  */
 
 import java.io.*;
-import java.net.*; 
+import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.StringTokenizer;
 
 import com.fasterxml.jackson.core.*;
@@ -14,38 +17,58 @@ import java.io.IOException;
 
 /**
  *
- * @author green
+ * @author Liwen Fan, Jia Sheng Ma, Ruoping Lin
  */
 public class server {
-    public static void main(String[] args) {
-        try {
-            ServerSocket s = new ServerSocket(6666);
-            while (true) {
-                Socket incoming = s.accept();
-                BufferedReader in = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
-                PrintWriter out = new PrintWriter( new OutputStreamWriter(incoming.getOutputStream()));
-                out.println("Hello! ....");
-                out.println("Enter BYE to exit.");
-                out.flush();
-                while (true) {
-                    //receive a command from the server
-                    String command = in.readLine();
-                    if (command == null) {
-                        break; // client closed connection
-                    } else {
-                        //identify the command
-                        commandMenu(command);
-                        out.println("Echo: " + command);
-                        out.flush();
-                        if (command.trim().equals("BYE"))
-                            break;
-                    }
-                }
-                incoming.close();
-            }
-        } catch (Exception e) {} 
+    public  static void main(String[] args) {
+//        try {
+//            ServerSocket s = new ServerSocket(6666);
+//            while (true) {
+//                // starting connecting to client
+//                Socket incoming = s.accept();
+//                BufferedReader in = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
+//                PrintWriter out = new PrintWriter( new OutputStreamWriter(incoming.getOutputStream()));
+//                out.println("Server Setup Successfully");
+//                out.println("Please enter your user ID to login");
+//                out.flush();
+//                while (true) {
+//                    // receive a command from the server
+//                    String command = in.readLine();
+//
+//                    if (command.equals("logout")) {
+//                        break; // server closes connection when the user enters "logout" command
+//                    } else {
+                        // match user ID with existing IDs. if fails to match, create a new user
+//                        File userDataFile = new File("Group Project/InterestGroup_S/Users/user_info.json");
+                        File userDataFile = new File("../user_info.json");
+
+//                        Path path = Paths.get("Group Project/InterestGroup_S/Users");
+//                        File file = new File("Group Project/InterestGroup_S/Users/1111.json");
+                        if (userDataFile.exists())
+                            System.out.println("file exists");
+                        else
+                            System.out.println("file does not exist");
+
+
+//
+////                        commandMenu(command);
+//                        out.println("Echo: " + command);
+//                        out.flush();
+////                        if (command.trim().equals("BYE"))
+////                            break;
+//                    }
+//                }
+//                incoming.close();
+//            }
+//        } catch (Exception e) {
+//            System.out.println("failed to create file");
+//        }
     }
-    
+
+    private static void readUserData() {
+
+    }
+
     // identify the command received from the clien
     public static void commandMenu (String command){
         //System.out.println("HERE");

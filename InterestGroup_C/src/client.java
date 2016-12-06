@@ -11,21 +11,15 @@ public class client{
         int portNum = 6666;
         try{
             int userID = 0001;
-            /*
-            if (args.length > 0) {
-                userID = args[0];
-            }else{
-                System.out.printf("no input user ID");
-                System.out.println();
-            }
-                    */
+
+            // start connection to server
             Socket socket = new Socket("localhost", 6666); 
             BufferedReader in = new BufferedReader( new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter( new OutputStreamWriter(socket.getOutputStream()));
             // send data to the server
             // send command to the server
             Scanner input = new Scanner(System.in);
-            System.out.println("login function"); //login
+            System.out.println("Client setup successfully"); //login
             do {
                 String command = input.nextLine();
                 out.println(command);
@@ -43,7 +37,8 @@ public class client{
                     }
                 }
             } while (true);
-        }catch (Exception e) {
+
+        } catch (Exception e) {
 
         }
     }

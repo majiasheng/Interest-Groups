@@ -1,4 +1,3 @@
-
 package data;
 
 import java.util.ArrayList;
@@ -22,5 +21,5 @@ public class DiscussionGroup {
 	public DiscussionGroup() {
 
 	}
-    
+
 }
