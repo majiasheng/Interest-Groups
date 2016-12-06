@@ -26,21 +26,23 @@ public class client{
             // send command to the server
             Scanner input = new Scanner(System.in);
             System.out.println("login function"); //login
-            String command = input.nextLine();  
-            out.println(command);
-            out.flush();
-            
-            out.println("BYE");
-            out.flush();
-            // receive data from the server
-            while (true) {
-                String str = in.readLine();
-                if (str == null) {
-                    break;
-                } else {
-                    System.out.println(str);
+            do {
+                String command = input.nextLine();
+                out.println(command);
+                out.flush();
+
+                out.println("BYE");
+                out.flush();
+                // receive data from the server
+                while (true) {
+                    String str = in.readLine();
+                    if (str == null) {
+                        break;
+                    } else {
+                        System.out.println(str);
+                    }
                 }
-            }
+            } while (true);
         }catch (Exception e) {
 
         }
