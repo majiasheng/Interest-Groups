@@ -16,6 +16,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -88,7 +89,7 @@ public class InterestGroup_Client {
                             continue;
                         } else {
                             // send login command to server
-                            output_to_server.writeObject(command);
+                            output_to_server.writeObject(formatCMD(command));
                         }
                     } else {
                         output_to_server.writeObject(formatCMD(command));
@@ -168,12 +169,29 @@ public class InterestGroup_Client {
     }
     
     /**
-     * Formats command to include all info needed by server 
+     * Tokenizes command 
+     * @param command
+     * @return tokens
      */
-    public static String formatCMD(String command) {
-        String formattedCMD;
-        // format: user_id,
-        formattedCMD = ""+user.getId()+",";
+    public static ArrayList<String> tokenizeCMD(String command) {
+        ArrayList<String> cmdTokens = new ArrayList<>();
+        for(String token : command.split(" ")) {
+            cmdTokens.add(token);
+        }
+        return cmdTokens;
+    }
+    
+    /**
+     * Formats command to include all info needed by server 
+     * Format: State, command(as array list), user object
+     */
+    public static ArrayList<Object> formatCMD(String command) {
+        ArrayList<Object> formattedCMD = new ArrayList<>();
+        ArrayList<String> cmdTokens = tokenizeCMD(command);
+        
+        formattedCMD.add(state);
+        formattedCMD.add(cmdTokens);
+        formattedCMD.add(user);
         
         return formattedCMD;
         

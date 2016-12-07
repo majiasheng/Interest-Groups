@@ -1,4 +1,4 @@
-package interest_group_c;
+package interest_group_s;
 
 /**
  * enum: states that the client is in

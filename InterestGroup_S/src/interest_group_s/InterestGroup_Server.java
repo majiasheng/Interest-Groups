@@ -65,10 +65,10 @@ public class InterestGroup_Server {
                     ************************************/
                     clientRequest = input_from_client.readObject();
                     // testing 
-                    System.out.println((String)clientRequest);
+//                    System.out.println((String)clientRequest);
 
                     // // handles client's request
-                    // response = handleClientRequest(clientRequest);
+                     response = handleClientRequest(clientRequest);
 
                     // // respond to client request
                     // output_to_client.writeObject(response);
@@ -108,11 +108,51 @@ public class InterestGroup_Server {
     }
 
     /**
-     * parses clientRequest (array of objects) and handles the request 
+     * parses clientRequest  - array list of objects in the format of:
+     *              Format: State, command(as array list), user object
+     * and handles the request 
      */
-    public static void handleClientRequest(Object clientRequest) {
-            // first check if the client request is LOGOUT
-            // if so, may want to update database and detach the thread
+    public static Object handleClientRequest(Object clientRequest) {
+        ArrayList<Object> clientRequestList = (ArrayList<Object>)clientRequest;
+        
+        // return value
+        Object rtval;
+        
+        // get state
+        State state = (State)clientRequestList.get(0);  
+        // get command in the form of array list 
+        ArrayList<String> command = (ArrayList<String>)clientRequestList.get(1);
+        // get user object 
+        User user = (User)clientRequestList.get(2);
+        
+        if(state == State.NOT_LOGGED_IN) {
+            // log user in 
+            String cmd = command.get(0); // login
+            String id = command.get(1); // user id
+            
+            //TODO: use id to load data 
+            // after loading data
+            /*      if user exits in db
+                        contruct a user object, return obj to client 
+                    else 
+                        create an new user object, add it to the server lsit
+                        and create a new entry for this user object in db
+                        and return it to the client
+            */
+            rtval = new User("333");
+            
+        } else if(state == State.IN_AG_CMD) {
+            
+        } else if(state == State.IN_SG_CMD) {
+            
+        } else if(state == State.IN_RG_CMD) {
+            
+        }
+        
+        // first check if the client request is LOGOUT
+        // if so, may want to update database and detach the thread
+        
+        return null;
 
     }
 
