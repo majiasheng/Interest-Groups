@@ -1,5 +1,6 @@
 package data;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -7,21 +8,31 @@ import java.util.ArrayList;
  * @author majiasheng
  */
 public class User {
-    private int id;
+    private String id;
     private String name;
+    private File   userDataFile;
+    private DataManager manager;
+    private ArrayList<String> subscribedGroups;
+    //TODO: groups have posts, and each posts has a read-or-not status
     
     private ArrayList<DiscussionGroup> groups;
     //TODO: groups have posts, and each posts has a read-or-not status
 
-    public User(int id) {
+    public User(String id) {
+        this.id = id;
+        // initialize groups
+        groups = new ArrayList<>();
+        for(DiscussionGroup g : groups) {
+            g = new DiscussionGroup();
+        }
 
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -39,6 +50,18 @@ public class User {
 
     public void addGroup(DiscussionGroup group) {
         groups.add(group);
+    }
+    
+        public ArrayList<String> getSubscribedGroups() {
+        subscribedGroups = new ArrayList<String>();
+        subscribedGroups.add("Java Group");
+        subscribedGroups.add("Javascript Group");
+        subscribedGroups.add("C Group");
+        return subscribedGroups;
+    }
+    
+    public void setSubscribedGroups(ArrayList<String> subscribedGroups) {
+        this.subscribedGroups = subscribedGroups;
     }
     
 }

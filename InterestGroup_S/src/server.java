@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
 import java.io.*;
 import java.net.*;
@@ -15,40 +20,50 @@ import java.io.IOException;
  * @author Liwen Fan, Jia Sheng Ma, Ruoping Lin
  */
 public class server {
-    public  static void main(String[] args) throws Exception {
+    public  static void main(String[] args) {
+//        try {
+//            ServerSocket s = new ServerSocket(6666);
+//            while (true) {
+//                // starting connecting to client
+//                Socket incoming = s.accept();
+//                BufferedReader in = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
+//                PrintWriter out = new PrintWriter( new OutputStreamWriter(incoming.getOutputStream()));
+//                out.println("Server Setup Successfully");
+//                out.println("Please enter your user ID to login");
+//                out.flush();
+//                while (true) {
+//                    // receive a command from the server
+//                    String command = in.readLine();
+//
+//                    if (command.equals("logout")) {
+//                        break; // server closes connection when the user enters "logout" command
+//                    } else {
+                        // match user ID with existing IDs. if fails to match, create a new user
+//                        File userDataFile = new File("Group Project/InterestGroup_S/Users/user_info.json");
+                        File userDataFile = new File("/Users/jiashengma/Desktop/CSE310_FP/310fp_repo/InterestGroups/InterestGroup_S/Users");
 
-        String clientSentence;
-        String capitalizedSentence;
-        String command;
+//                        Path path = Paths.get("Group Project/InterestGroup_S/Users");
+//                        File file = new File("Group Project/InterestGroup_S/Users/1111.json");
+                        if (userDataFile.exists())
+                            System.out.println("file exists");
+                        else
+                            System.out.println("file does not exist");
 
-        // create a server socket (TCP)
-        ServerSocket welcomeSocket = new ServerSocket(6666);
 
-        // loop infinitely (process clients sequentially)
-        while (true) {
-            // Wait and accept client connection
-            Socket connectionSocket = welcomeSocket.accept();
-
-            //create an input stream from the socket input steram
-            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-
-            // create an output stream from the socket output steram
-            DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-
-            // read a line form the input stream
-            clientSentence = inFromClient.readLine();
-
-            // capitalize the sentence
-            capitalizedSentence = clientSentence.toUpperCase() + '\n';
-
-            // send the capitalized sentence back to the  client
-            outToClient.writeBytes(capitalizedSentence);
-
-            // close the connection socket
-            connectionSocket.close();
-        }
+//
+////                        commandMenu(command);
+//                        out.println("Echo: " + command);
+//                        out.flush();
+////                        if (command.trim().equals("BYE"))
+////                            break;
+//                    }
+//                }
+//                incoming.close();
+//            }
+//        } catch (Exception e) {
+//            System.out.println("failed to create file");
+//        }
     }
-
 
     private static void readUserData() {
 

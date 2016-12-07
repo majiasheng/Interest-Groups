@@ -20,7 +20,7 @@ import java.util.Scanner;
  */
 public class InterestGroup_Client {
     static User user;
-    static State state;
+    static State state;     // user state in the session
     
     /**
      * @param args the command line arguments
@@ -36,6 +36,9 @@ public class InterestGroup_Client {
             try{
                 // create socket with hostmachine and portnumber 
                 Socket socket = new Socket(hostmachine, portnumber);
+                // feedback: connected to hostmachine 
+                System.out.println(">> Connected to " + hostmachine + "\n");
+
                 // input buffer (to server)
                 BufferedReader input_from_server = new BufferedReader( new InputStreamReader(socket.getInputStream()));
                 // output buffer (from server)
@@ -53,15 +56,27 @@ public class InterestGroup_Client {
                     /*****************************
                         get user command
                     *****************************/
+                    System.out.print(">> ");
                     command = user_input.nextLine();
-                    
+
+                    // prints help menu
+                    if(command.equals(Constants.HELP)) {
+                        printHelpMenu();
+                        continue;
+                    }
                     /*****************************
                         send server command 
                             package user command before sending it to server
                             but if it is not logged in, just send the command
                     *****************************/                        
                     if(state == State.NOT_LOGGED_IN) {
-                        output_to_server.println(command);
+                        if(!command.equals(Constants.LOGIN)){
+                            // feedback: not logged in
+                            System.out.println(">> Please log in \n");
+                        } else {
+                            // send login command to server
+                            output_to_server.println(command);
+                        }
                     } else {
                         formatCMD(command);
                         output_to_server.println();
@@ -95,9 +110,9 @@ public class InterestGroup_Client {
         responseTokens = parseResponse(response);
         //TODO: need to discuss about the format for response
         /* a sample response format: 
-                | user_command | data for user's request     | 
-                |--------------+-----------------------------|
-                |  login       | user's info(in a format..)  |
+                | user_command | data for user's request     | state
+                |--------------+-----------------------------+--------
+                |  login       | user's info(in a format..)  | IN_AG_CMD
             responseTokens[0] should be user_command
             responseTokens[1] should be data for user's request
             etc.. 
@@ -130,7 +145,9 @@ public class InterestGroup_Client {
                 
             } while(true);
         } else if(responseTokens[0].equals(Constants.LOGIN)) {
-            // create user 
+            /* TODO: create user, store user info locally if it is a new user
+                                  load user info if it is in the data bases
+            */
             
         }
     }
@@ -153,9 +170,24 @@ public class InterestGroup_Client {
      * @return all the info from the response as tokens
      */
     public static String[] parseResponse(String response) {
-//        String[] responseTokens = new String[];
+    // String[] responseTokens = new String[];
         
         return null;
+    }
+
+    /**
+     * Prints help menu
+     */
+    public static void printHelpMenu() {
+        // TODO: format help menu, add sub commands
+        System.out.println("###############################################");
+        System.out.println("# help                print this menu         #");
+        System.out.println("# login USEID         log in                  #");
+        System.out.println("# ag                  show all groups         #");
+        System.out.println("# sg                  show subscribed groups  #");
+        System.out.println("# rg                  read groups             #");
+        System.out.println("###############################################");
+
     }
     
 }

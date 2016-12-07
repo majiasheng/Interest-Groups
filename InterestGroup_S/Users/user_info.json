@@ -1,1 +1,7 @@
-{"USERNAME":"a","PASSWORD":"aaa"}
+{
+    "0001":[
+    {"sgroup":"music"},
+    {"sgroup":"Math"},
+    {"sgroup":"CS"}
+    ]
+}
