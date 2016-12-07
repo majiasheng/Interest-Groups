@@ -22,4 +22,36 @@ public class DiscussionGroup {
 
 	}
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public void addUser(User user) {
+        users.add(user);
+    }
+
+    public ArrayList<Post> getPosts() {
+        return posts;
+    }
+
+    public void addPost(Post post) {
+        posts.add(post);
+    }
+
 }
