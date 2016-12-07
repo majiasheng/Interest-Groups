@@ -18,8 +18,18 @@ public class User {
     private ArrayList<DiscussionGroup> groups;
     //TODO: groups have posts, and each posts has a read-or-not status
 
+    public static void main(String[] args) {
+        
+        User user = new User("333");
+        
+    }
+    
+    public User() {
+        
+    }
     public User(String id) {
         this.id = id;
+        manager = new DataManager(this);
         // initialize groups
         groups = new ArrayList<>();
         for(DiscussionGroup g : groups) {
