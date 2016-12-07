@@ -19,17 +19,20 @@ import java.util.Scanner;
  * client side 
  */
 public class InterestGroup_Client {
-
+    static User user;
+    static State state;
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        User user;
 
         // get hostmachine and port number 
         String hostmachine = args[1];
         int portnumber = Integer.parseInt(args[2]);
         
+        // user is not logged in yet 
+        state = State.NOT_LOGGED_IN;
             try{
                 // create socket with hostmachine and portnumber 
                 Socket socket = new Socket(hostmachine, portnumber);
@@ -53,9 +56,17 @@ public class InterestGroup_Client {
                     command = user_input.nextLine();
                     
                     /*****************************
-                         send server command 
-                    *****************************/
-                    output_to_server.println(command);
+                        send server command 
+                            package user command before sending it to server
+                            but if it is not logged in, just send the command
+                    *****************************/                        
+                    if(state == State.NOT_LOGGED_IN) {
+                        output_to_server.println(command);
+                    } else {
+                        formatCMD(command);
+                        output_to_server.println();
+                    }
+                    
                     output_to_server.flush();
                     
                     /*****************************
@@ -106,7 +117,20 @@ public class InterestGroup_Client {
             } while(true);
         } else if(response.equals(Constants.LOGIN)) {
             // create user 
+            
         }
+    }
+    
+    /**
+     * Formats command to include all info needed by server 
+     */
+    public static String formatCMD(String command) {
+        String formattedCMD;
+        // format: 
+        formattedCMD = 
+        
+        return formattedCMD;
+        
     }
     
 }

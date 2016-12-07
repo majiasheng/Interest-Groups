@@ -3,6 +3,7 @@ package interest_group_s;
 import com.fasterxml.jackson.core.*;
 import data.Constants;
 import data.DiscussionGroup;
+import data.User;
 
 import java.util.ArrayList;
 
@@ -17,11 +18,12 @@ import java.util.ArrayList;
 public class InterestGroup_Server {
 
 	private ArrayList<DiscussionGroup> groups;
+        private ArrayList<User> users;
 
 	public InterestGroup_Server() {
-		/* initialize discussion group array */
-		groups = new ArrayList<>();
-
+            /* initialize data structures */
+            groups = new ArrayList<>();
+            users = new ArrayList<>();
 
 	}
 

@@ -1,5 +1,7 @@
 package data;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author majiasheng
@@ -13,9 +15,10 @@ public class Post {
 	private String subject;
 	private String author;
 	private String date;
+        private String content;
 
 	public Post() {
-		
+            
 	}
 
 }
