@@ -1,3 +1,5 @@
 ##### death to .DS_Store ##########
 .DS_Store
 *.class
+/InterestGroup_S/build/
+/InterestGroup_C/build/

@@ -1,11 +1,20 @@
 package interest_group_s;
 
-import com.fasterxml.jackson.core.*;
+//import com.fasterxml.jackson.core.*;
 import data.Constants;
 import data.DiscussionGroup;
 import data.User;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,182 +26,194 @@ import java.util.ArrayList;
  */
 public class InterestGroup_Server {
 
-	
-	private static ArrayList<DiscussionGroup> groups;
-    private static ArrayList<User> users;
+    private static ArrayList<Socket> clients;
+    private static ArrayList<DiscussionGroup> groups;
+    private static Map<Integer, User> users;
 
     /*****************************************
     		worker server for clients
     *****************************************/
-	class WorkerServer extends Thread {
-	    private Socket connectionSocket;
-	    private Object clientRequest;
+    static class WorkerServer extends Thread {
+        private Socket connectionSocket;
+        private Object clientRequest;
 
-	    public WorkerServer(Socket connectionSocket) {
-	        this.socket = socconnectionSocketket;
-	    }
+        /*	construct worker server dedicated to the 
+                    specified socket (client) 
+                    (worker server shares 
+                    database and functions with 
+                    all other servers)                       */
+        public WorkerServer(Socket connectionSocket) {
+            this.connectionSocket = connectionSocket;
+        }
 
-	    public void run(){
-	    	// create input/output channels 
-	    	ObjectInputStream input_from_client = new ObjectInputStream(new InputStreamReader(connectionSocket.getInputStream()));
-			ObjectOutputStream output_to_client = new ObjectOutputStream(connectionSocket.getOutputStream());
-			
-			Object response;
+        public void run(){
+            // create input/output channels 
+            ObjectInputStream input_from_client;
+            ObjectOutputStream output_to_client;
+            try {
+                
+                System.out.println("creating in out stream");
+                input_from_client = new ObjectInputStream(connectionSocket.getInputStream());
+                output_to_client = new ObjectOutputStream(connectionSocket.getOutputStream());
+                
+                System.out.println("finish creating in out stream");
+                Object response;
 
-			while(true){
-				/************************************
-                    listen for request from client
-                 ************************************/
-				clientRequest = input_from_client.readObject();
-				
-				// handles client's request
-				response = handleClientRequest(clientRequest);
-				
+                while(true){
+                    /************************************
+                        listen for request from client
+                    ************************************/
+                    clientRequest = input_from_client.readObject();
+                    // testing 
+                    System.out.println((String)clientRequest);
 
-				// 
-				output_to_client.writeObject(response);
+                    // // handles client's request
+                    // response = handleClientRequest(clientRequest);
 
-			}
-	    }
-	} /* end of worker server */
+                    // // respond to client request
+                    // output_to_client.writeObject(response);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("ERROR");
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-	public static void main(String argv[]) {
+        }
+    } /* end of worker server */
+    /****************************************************/
 
-		System.out.println("Starting server...");
-		ServerSocket welcomeSocket = new ServerSocket(6789);
-		System.out.println("Listening...");
+    public static void main(String argv[]) throws IOException {
+        //TODO: how to clients disconnection
+        //TODO: initialize data structures
+        clients = new ArrayList<>();
 
-		while(true) {
-				try {
-					Socket connectionSocket = welcomeSocket.accept();
-					
-					// make a worker server for each of the connected clients 
-					WorkerServer workerServer = WorkerServer(connectionSocket);
+        System.out.println("Starting server...");
+        ServerSocket welcomeSocket = new ServerSocket(6666);
+        System.out.println("Listening...");
 
+        while(true) {
+            try {
+                Socket connectionSocket = welcomeSocket.accept();
+                System.out.println("new client " + connectionSocket.toString());
+                // make a worker server for each of the connected clients 
+                WorkerServer workerServer = new WorkerServer(connectionSocket);
+                workerServer.start();
 
-				} catch(Exception e) {
-					System.out.println("ERROR");
-				}
-			} 
-		}
+            } catch(Exception e) {
+                System.out.println("ERROR");
+            }
+        } 
+    }
 
-	/**
-	 * parses clientRequest (array of objects) and handles the request 
-	 */
-	public static void handleClientRequest(Object clientRequest) {
-		// first check if the client request is LOGOUT
-		// if so, may want to update database and detach the thread
+    /**
+     * parses clientRequest (array of objects) and handles the request 
+     */
+    public static void handleClientRequest(Object clientRequest) {
+            // first check if the client request is LOGOUT
+            // if so, may want to update database and detach the thread
 
-	}
+    }
 
-	public ArrayList<User> getUsers() {
+    public Map<Integer, User> getUsers() {
         return users;
     }
 
-	public User getUserById(int id) {
-
-        return users;
+    public User getUserById(int id) {
+        return users.get(id);
+        
     }    
 
-    public void addUser(User user) {
-        users.add(user);
+    public void addUser(Integer id, User user) {
+        users.put(id, user);
     }
 
+    /**
+     * Handles the command by calling corresponding handlers
+     */
+    static void handleCMD(String command) {
+        if(command.equals(Constants.LOGOUT)){
+        // send server a logout request 
+        } else if(command.equals(Constants.LOGIN)) {
+        // send server a login request 
+        }
+    }
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args) {
-
-		//TODO: spin and listen for client request
-
-	}
-
-	/**
-	 * Handles the command by calling corresponding handlers
-	 */
-	static void handleCMD(String command) {
-            if(command.equals(Constants.LOGOUT)){
-            // send server a logout request 
-            } else if(command.equals(Constants.LOGIN)) {
-            // send server a login request 
-            }
-	}
-
-	/**
-	 * Updates program info on every client change requests
-	 */
-	static void update() {}
+    /**
+     * Updates program info on every client change requests
+     */
+    static void update() {}
 
 
-	static void login_handler() {}
+    static void login_handler() {}
 
-	/****************************************
-	 ag - Ruoping
-	 ****************************************/
-	/**
-	 * lists all existing groups, a default number of groups at a time 
-	 */
-	static void ag_handler() {}
+    /****************************************
+     ag - Ruoping
+     ****************************************/
+    /**
+     * lists all existing groups, a default number of groups at a time 
+     */
+    static void ag_handler() {}
 
-	/**
-	 * lists N groups at a time
-	 */
-	static void ag_handler(int N){};
+    /**
+     * lists N groups at a time
+     */
+    static void ag_handler(int N){};
 
-	/**
-	 * - subscribe to groups
-	 */
-	static void s_handler_ag() {}
+    /**
+     * - subscribe to groups
+     */
+    static void s_handler_ag() {}
 
-	/**
-	 *	unsubscribe
-	 */
-	static void u_handler_ag() {}
+    /**
+     *	unsubscribe
+     */
+    static void u_handler_ag() {}
 
-	/**
-	 *	lists the next N discussion groups
-	 */
-	static void n_handler_ag() {}
+    /**
+     *	lists the next N discussion groups
+     */
+    static void n_handler_ag() {}
 
-	/**
-	 *	exit from ag command
-	 */
-	static void q_handler_ag() {}
+    /**
+     *	exit from ag command
+     */
+    static void q_handler_ag() {}
 
-	/****************************************
-	 sg - Liwen
-	 ****************************************/
-	static void sg_handler() {}
+    /****************************************
+     sg - Liwen
+     ****************************************/
+    static void sg_handler() {}
 
-	/**
-	 *	marks a post as read
-	 */
-	static void r_handler_sg() {}
+    /**
+     *	marks a post as read
+     */
+    static void r_handler_sg() {}
 
-	/**
-	 *	lists the next N discussion groups
-	 */
-	static void n_handler_sg() {}
+    /**
+     *	lists the next N discussion groups
+     */
+    static void n_handler_sg() {}
 
-	/**
-	 *	post to the group
-	 */
-	static void p_handler_sg() {}
+    /**
+     *	post to the group
+     */
+    static void p_handler_sg() {}
 
-	/**
-	 *	exit from sg command
-	 */
-	static void q_handler_sg() {}
+    /**
+     *	exit from sg command
+     */
+    static void q_handler_sg() {}
 
-	/****************************************
-	 rg - Jia Sheng
-	 ****************************************/
+    /****************************************
+     rg - Jia Sheng
+     ****************************************/
 
 
-	/**
-	 * read group
-	 */
+    /**
+     * read group
+     */
 //	static void rg_handler(String gname) {
 //		/* unread (new) posts should be displayed first*/
 //		DiscussionGroup g;
@@ -200,66 +221,66 @@ public class InterestGroup_Server {
 //
 //	}
 
-	static void rg_handler(String gname, int N) {
+    static void rg_handler(String gname, int N) {
 
 
-	}
+    }
 
-	static void id_handler_rg() {
+    static void id_handler_rg() {
 
-	}
+    }
 
-	/**
-	 * lists the next N posts.
-	 * If all posts are displayed, the program exits from the rg command mode
-	 */
-	static void n_id_handler_rg(int N) {
+    /**
+     * lists the next N posts.
+     * If all posts are displayed, the program exits from the rg command mode
+     */
+    static void n_id_handler_rg(int N) {
 
-	}
+    }
 
-	/**
-	 * would quit displaying the post content.
-	 * The list of posts before opening the post is shown
-	 * again with the post just opened marked as read.
-	 */
-	static void q_id_handler_rg() {
+    /**
+     * would quit displaying the post content.
+     * The list of posts before opening the post is shown
+     * again with the post just opened marked as read.
+     */
+    static void q_id_handler_rg() {
 
-	}
+    }
 
-	/**
-	 * marks post in range of h to t as read
-	 */
-	static void r_handler_rg(int h, int t) {
+    /**
+     * marks post in range of h to t as read
+     */
+    static void r_handler_rg(int h, int t) {
 
-	}
+    }
 
-	/**
-	 *	lists the next N discussion groups
-	 */
-	static void n_handler_rg() {}
+    /**
+     *	lists the next N discussion groups
+     */
+    static void n_handler_rg() {}
 
-	/**
-	 *	post to the group
-	 */
-	static void p_handler_rg() {}
+    /**
+     *	post to the group
+     */
+    static void p_handler_rg() {}
 
-	/**
-	 *	exit from rg command
-	 */
-	static void q_handler_rg() {}
+    /**
+     *	exit from rg command
+     */
+    static void q_handler_rg() {}
 
-	/**
-	 * Returns the group specified by gname
-	 */
+    /**
+     * Returns the group specified by gname
+     */
 //	static DiscussionGroup getGroupByName(String gname) {
 //
 //	}
 
-	/****************************************
-	 OTHER FUNCTIONS
-	 ****************************************/
+    /****************************************
+     OTHER FUNCTIONS
+     ****************************************/
 
-	void createUser() {}
+    void createUser() {}
 
 
 }
