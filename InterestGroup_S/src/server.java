@@ -15,15 +15,17 @@ import java.io.IOException;
  * @author Liwen Fan, Jia Sheng Ma, Ruoping Lin
  */
 public class server {
-    public  static void main(String[] args) throws Exception{
+    public  static void main(String[] args) throws Exception {
+
         String clientSentence;
         String capitalizedSentence;
+        String command;
 
         // create a server socket (TCP)
         ServerSocket welcomeSocket = new ServerSocket(6666);
 
         // loop infinitely (process clients sequentially)
-        while(true) {
+        while (true) {
             // Wait and accept client connection
             Socket connectionSocket = welcomeSocket.accept();
 
@@ -31,8 +33,7 @@ public class server {
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
             // create an output stream from the socket output steram
-            DataOutputStream  outToClient =
-                    new DataOutputStream(connectionSocket.getOutputStream());
+            DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 
             // read a line form the input stream
             clientSentence = inFromClient.readLine();
@@ -46,8 +47,8 @@ public class server {
             // close the connection socket
             connectionSocket.close();
         }
-
     }
+
 
     private static void readUserData() {
 
