@@ -18,7 +18,7 @@ public class User {
 
     public User() { }
     
-    public User(int id) {
+    public User(String id) {
         manager = new DataManager(this);      // manager managers (has save & load methods)
         
     }
