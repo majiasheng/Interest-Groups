@@ -17,15 +17,86 @@ import java.util.ArrayList;
  */
 public class InterestGroup_Server {
 
-	private ArrayList<DiscussionGroup> groups;
-        private ArrayList<User> users;
+	
+	private static ArrayList<DiscussionGroup> groups;
+    private static ArrayList<User> users;
 
-	public InterestGroup_Server() {
-            /* initialize data structures */
-            groups = new ArrayList<>();
-            users = new ArrayList<>();
+    /*****************************************
+    		worker server for clients
+    *****************************************/
+	class WorkerServer extends Thread {
+	    private Socket connectionSocket;
+	    private Object clientRequest;
+
+	    public WorkerServer(Socket connectionSocket) {
+	        this.socket = socconnectionSocketket;
+	    }
+
+	    public void run(){
+	    	// create input/output channels 
+	    	ObjectInputStream input_from_client = new ObjectInputStream(new InputStreamReader(connectionSocket.getInputStream()));
+			ObjectOutputStream output_to_client = new ObjectOutputStream(connectionSocket.getOutputStream());
+			
+			Object response;
+
+			while(true){
+				/************************************
+                    listen for request from client
+                 ************************************/
+				clientRequest = input_from_client.readObject();
+				
+				// handles client's request
+				response = handleClientRequest(clientRequest);
+				
+
+				// 
+				output_to_client.writeObject(response);
+
+			}
+	    }
+	} /* end of worker server */
+
+	public static void main(String argv[]) {
+
+		System.out.println("Starting server...");
+		ServerSocket welcomeSocket = new ServerSocket(6789);
+		System.out.println("Listening...");
+
+		while(true) {
+				try {
+					Socket connectionSocket = welcomeSocket.accept();
+					
+					// make a worker server for each of the connected clients 
+					WorkerServer workerServer = WorkerServer(connectionSocket);
+
+
+				} catch(Exception e) {
+					System.out.println("ERROR");
+				}
+			} 
+		}
+
+	/**
+	 * parses clientRequest (array of objects) and handles the request 
+	 */
+	public static void handleClientRequest(Object clientRequest) {
+		// first check if the client request is LOGOUT
+		// if so, may want to update database and detach the thread
 
 	}
+
+	public ArrayList<User> getUsers() {
+        return users;
+    }
+
+	public User getUserById(int id) {
+
+        return users;
+    }    
+
+    public void addUser(User user) {
+        users.add(user);
+    }
 
 
 	/**
@@ -34,6 +105,7 @@ public class InterestGroup_Server {
 	public static void main(String[] args) {
 
 		//TODO: spin and listen for client request
+
 	}
 
 	/**

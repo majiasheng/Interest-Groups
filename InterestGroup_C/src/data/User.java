@@ -14,6 +14,12 @@ public class User {
     //TODO: groups have posts, and each posts has a read-or-not status
 
     public User(int id) {
+        this.id = id;
+        // initialize groups
+        groups = new ArrayList<>();
+        for(DiscussionGroup g : groups) {
+            g = new DiscussionGroup();
+        }
 
     }
 

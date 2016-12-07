@@ -19,7 +19,8 @@ public class DiscussionGroup {
 	private ArrayList<Post> posts;
 
 	public DiscussionGroup() {
-
+        user = new ArrayList<>();
+        posts = new ArrayList<>();
 	}
 
     public int getId() {
