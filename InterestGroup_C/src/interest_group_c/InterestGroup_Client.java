@@ -83,12 +83,26 @@ public class InterestGroup_Client {
     }
     
     /**
-     * Handlers server response
+     * Handles server's response
+     * @param response
+     * @param input_from_server
+     * @param output_to_server
+     * @param user_input 
      */
     public static void handleServerResponse(String response, BufferedReader input_from_server, 
                                             PrintWriter output_to_server, Scanner user_input) {
-        
-        if(response.equals(Constants.AG)) {
+        String[] responseTokens;
+        responseTokens = parseResponse(response);
+        //TODO: need to discuss about the format for response
+        /* a sample response format: 
+                | user_command | data for user's request     | 
+                |--------------+-----------------------------|
+                |  login       | user's info(in a format..)  |
+            responseTokens[0] should be user_command
+            responseTokens[1] should be data for user's request
+            etc.. 
+        */
+        if(responseTokens[0].equals(Constants.AG)) {
             System.out.println("################################");
             System.out.println("#          all groups          #");
             System.out.println("################################");
@@ -97,7 +111,7 @@ public class InterestGroup_Client {
             do { // listen for user commands 
                 
             } while(true);
-        } else if(response.equals(Constants.SG)) {
+        } else if(responseTokens[0].equals(Constants.SG)) {
             System.out.println("################################");
             System.out.println("#       subscribed groups      #");
             System.out.println("################################");
@@ -106,7 +120,7 @@ public class InterestGroup_Client {
             do { // listen for user commands 
                 
             } while(true);
-        } else if(response.equals(Constants.RG)) {
+        } else if(responseTokens[0].equals(Constants.RG)) {
             System.out.println("################################");
             System.out.println("#          read groups         #");
             System.out.println("################################");
@@ -115,7 +129,7 @@ public class InterestGroup_Client {
             do { // listen for user commands 
                 
             } while(true);
-        } else if(response.equals(Constants.LOGIN)) {
+        } else if(responseTokens[0].equals(Constants.LOGIN)) {
             // create user 
             
         }
@@ -126,11 +140,22 @@ public class InterestGroup_Client {
      */
     public static String formatCMD(String command) {
         String formattedCMD;
-        // format: 
-        formattedCMD = 
+        // format: user_id,
+        formattedCMD = ""+user.getId()+",";
         
         return formattedCMD;
         
+    }
+    
+    /***
+     * Parses the formatted response message from server
+     * @param response
+     * @return all the info from the response as tokens
+     */
+    public static String[] parseResponse(String response) {
+//        String[] responseTokens = new String[];
+        
+        return null;
     }
     
 }
