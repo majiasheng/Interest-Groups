@@ -11,7 +11,7 @@ import java.nio.file.Files;
 
 /**
  *
- * @author majiasheng, Ruoping Lin
+ * @author Ruoping Lin
  */
 
 /**
@@ -24,8 +24,8 @@ public class DataManager {
     private User               user;
     private String             userID;
     
-    public static final String defaultPath = "src/saved/";     
-    public static final String jsonExtension = ".json";     
+    public static final String DEFAULT_PATH = "src/saved/";     
+    public static final String JSON_EXTENSION = ".json";     
     public static final String USER_ID = "USER_ID";
     public static final String SUBSCRIBED_GROUPS = "SUBSCRIBED_GROUPS";
     public static final String POSTS = "POSTS";
@@ -37,7 +37,7 @@ public class DataManager {
     
     public DataManager(User user) throws IOException{
         this.user = user;
-//        userDataFile = new File(defaultPath + user.getId() + jsonExtension);
+//        userDataFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
         //@todo: check the existence of user data file, create one if not
         
     }

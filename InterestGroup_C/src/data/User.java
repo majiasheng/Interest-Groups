@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author majiasheng
+ * @author Ruoping Lin
  */
 public class User {
     private String id;
@@ -19,12 +19,6 @@ public class User {
     private ArrayList<DiscussionGroup> groups;
     //TODO: groups have posts, and each posts has a read-or-not status
 
-    public static void main(String[] args) throws IOException {
-        
-        User user = new User("333");
-        System.out.println(user.getId());
-    }
-    
     public User() {
         
     }
