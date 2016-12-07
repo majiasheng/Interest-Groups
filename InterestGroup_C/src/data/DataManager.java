@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import static java.lang.ProcessBuilder.Redirect.to;
 import java.nio.file.Files;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -35,7 +37,7 @@ public class DataManager {
     }
     
     
-    public DataManager(User user) throws IOException{
+    public DataManager(User user) {
         this.user = user;
 //        userDataFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
         //@todo: check the existence of user data file, create one if not
@@ -46,7 +48,7 @@ public class DataManager {
         
     }
     
-    protected void saveUserData(Path saveTo) {
+    protected void saveUserData(User user, Path saveTo) {
         JsonFactory jsonFactory = new JsonFactory();
        
         try (OutputStream out = Files.newOutputStream(saveTo)) {
@@ -72,11 +74,12 @@ public class DataManager {
         
     }
     
-    protected void loadUserData(Path loadFrom) throws IOException {
+    protected void loadUserData(User user, Path loadFrom) {
         JsonFactory jsonFactory = new JsonFactory();
-        JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));
-
-        while(!jsonParser.isClosed()) {
+        JsonParser  jsonParser;
+        try {
+            jsonParser = jsonFactory.createParser(Files.newInputStream(loadFrom));
+            while(!jsonParser.isClosed()) {
             JsonToken token = jsonParser.nextToken();
             if (JsonToken.FIELD_NAME.equals(token)) {
                 String fieldname = jsonParser.getCurrentName();
@@ -95,7 +98,10 @@ public class DataManager {
                 }
             }
         }
-        
+        } catch (IOException ex) {
+            System.out.println("Unable to load JSON file");
+        }
+
     }
     
     
