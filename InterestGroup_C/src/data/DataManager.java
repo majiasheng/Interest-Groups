@@ -11,7 +11,7 @@ import java.nio.file.Files;
 
 /**
  *
- * @author majiasheng, Ruoping Lin
+ * @author Ruoping Lin
  */
 
 /**
@@ -24,8 +24,8 @@ public class DataManager {
     private User               user;
     private String             userID;
     
-    public static final String defaultPath = "src/saved/";     
-    public static final String jsonExtension = ".json";     
+    public static final String DEFAULT_PATH = "src/saved/";     
+    public static final String JSON_EXTENSION = ".json";     
     public static final String USER_ID = "USER_ID";
     public static final String SUBSCRIBED_GROUPS = "SUBSCRIBED_GROUPS";
     public static final String POSTS = "POSTS";
@@ -35,12 +35,10 @@ public class DataManager {
     }
     
     
-    public DataManager(User user){
+    public DataManager(User user) throws IOException{
         this.user = user;
-        
-        userDataFile = new File(defaultPath + user.getId() + jsonExtension);
+//        userDataFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
         //@todo: check the existence of user data file, create one if not
-        saveUserData(userDataFile.toPath());
         
     }
     
@@ -74,7 +72,29 @@ public class DataManager {
         
     }
     
-    protected void loadUserData(Path loadFrom) {
+    protected void loadUserData(Path loadFrom) throws IOException {
+        JsonFactory jsonFactory = new JsonFactory();
+        JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));
+
+        while(!jsonParser.isClosed()) {
+            JsonToken token = jsonParser.nextToken();
+            if (JsonToken.FIELD_NAME.equals(token)) {
+                String fieldname = jsonParser.getCurrentName();
+                switch (fieldname) {
+                    case USER_ID:
+                        jsonParser.nextToken();
+                        user.setId(jsonParser.getValueAsString());
+                        break;
+                    case SUBSCRIBED_GROUPS:
+                        jsonParser.nextToken();
+                        while (jsonParser.nextToken() != JsonToken.END_ARRAY)
+                            user.addSubscribedGroup(jsonParser.getValueAsString());
+                        break;
+                    default:
+                        throw new JsonParseException(jsonParser, "Unable to load JSON data");
+                }
+            }
+        }
         
     }
     
