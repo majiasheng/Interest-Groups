@@ -1,6 +1,7 @@
 package data;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -18,23 +19,25 @@ public class User {
     private ArrayList<DiscussionGroup> groups;
     //TODO: groups have posts, and each posts has a read-or-not status
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         
         User user = new User("333");
-        
+        System.out.println(user.getId());
     }
     
     public User() {
         
     }
-    public User(String id) {
+    public User(String id) throws IOException {
         this.id = id;
-        manager = new DataManager(this);
+        
         // initialize groups
         groups = new ArrayList<>();
         for(DiscussionGroup g : groups) {
             g = new DiscussionGroup();
         }
+        subscribedGroups = new ArrayList<String>();
+        manager = new DataManager(this);
 
     }
 
@@ -62,14 +65,21 @@ public class User {
         groups.add(group);
     }
     
-        public ArrayList<String> getSubscribedGroups() {
-        subscribedGroups = new ArrayList<String>();
-        subscribedGroups.add("Java Group");
-        subscribedGroups.add("Javascript Group");
-        subscribedGroups.add("C Group");
+    public ArrayList<String> getSubscribedGroups() {
         return subscribedGroups;
     }
     
+    /*
+    * add subscribed group to the subscribed group list
+    * @param subscribedGroup: a group
+    */
+    public void addSubscribedGroup(String subscribedGroup) {
+        this.subscribedGroups.add(subscribedGroup);
+    }
+    
+    /*
+    * load a new set of subscribed groups (initially, load to a new User obj)
+    */
     public void setSubscribedGroups(ArrayList<String> subscribedGroups) {
         this.subscribedGroups = subscribedGroups;
     }
