@@ -8,8 +8,11 @@
 import data.Constants;
 import data.User;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -26,28 +29,37 @@ public class InterestGroup_Client {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
+        ObjectInputStream input_from_server;
+        ObjectOutputStream output_to_server;
+        Socket socket;
+        
         // get hostmachine and port number 
-        String hostmachine = args[1];
-        int portnumber = Integer.parseInt(args[2]);
+//        String hostmachine = args[1];
+//        int portnumber = Integer.parseInt(args[2]);
         
         // user is not logged in yet 
         state = State.NOT_LOGGED_IN;
             try{
-                // create socket with hostmachine and portnumber 
-                Socket socket = new Socket(hostmachine, portnumber);
-                // feedback: connected to hostmachine 
-                System.out.println(">> Connected to " + hostmachine + "\n");
-
-                // input buffer (to server)
-                BufferedReader input_from_server = new BufferedReader( new InputStreamReader(socket.getInputStream()));
-                // output buffer (from server)
-                PrintWriter output_to_server = new PrintWriter( new OutputStreamWriter(socket.getOutputStream()));
-                // user input 
-                Scanner user_input = new Scanner(System.in);
-                String command; // user command 
+                // user input scanner
+                Scanner user_input_scn = new Scanner(System.in);
+                // user command
+                String command; 
                 // server response
                 String response;
+                // create socket
+                socket = new Socket("localhost", 6666);
+                
+                System.out.println(">> Connected to localhost at 6666\n");
+//                // create socket with hostmachine and portnumber 
+//                Socket socket = new Socket(hostmachine, portnumber);
+//                // feedback: connected to hostmachine 
+//                System.out.println(">> Connected to " + hostmachine + "\n");
+
+                // output buffer (tp server)
+                output_to_server = new ObjectOutputStream(socket.getOutputStream());
+                // input buffer (from server)
+                input_from_server = new ObjectInputStream(socket.getInputStream());
+                
                 
                 /*****************************
                     listen for user command 
@@ -57,7 +69,7 @@ public class InterestGroup_Client {
                         get user command
                     *****************************/
                     System.out.print(">> ");
-                    command = user_input.nextLine();
+                    command = user_input_scn.nextLine();
 
                     // prints help menu
                     if(command.equals(Constants.HELP)) {
@@ -73,13 +85,13 @@ public class InterestGroup_Client {
                         if(!command.equals(Constants.LOGIN)){
                             // feedback: not logged in
                             System.out.println(">> Please log in \n");
+                            continue;
                         } else {
                             // send login command to server
-                            output_to_server.println(command);
+                            output_to_server.writeObject(command);
                         }
                     } else {
-                        formatCMD(command);
-                        output_to_server.println();
+                        output_to_server.writeObject(formatCMD(command));
                     }
                     
                     output_to_server.flush();
@@ -87,12 +99,15 @@ public class InterestGroup_Client {
                     /*****************************
                         get response from server
                      *****************************/
-                    response = input_from_server.readLine();
-                    handleServerResponse(response, input_from_server, output_to_server, user_input);
+                    response = (String)input_from_server.readObject();
+                    handleServerResponse(response, input_from_server, output_to_server, user_input_scn);
                 } while (true);
 
             } catch(IOException ioe) {
                 System.out.println("FAILED TO CONNECT TO HOST");
+            } 
+            catch(ClassNotFoundException cnf) {
+                cnf.printStackTrace();
             }
 
     }
@@ -104,8 +119,8 @@ public class InterestGroup_Client {
      * @param output_to_server
      * @param user_input 
      */
-    public static void handleServerResponse(String response, BufferedReader input_from_server, 
-                                            PrintWriter output_to_server, Scanner user_input) {
+    public static void handleServerResponse(String response, ObjectInputStream input_from_server, 
+                                            ObjectOutputStream output_to_server, Scanner user_input) {
         String[] responseTokens;
         responseTokens = parseResponse(response);
         //TODO: need to discuss about the format for response

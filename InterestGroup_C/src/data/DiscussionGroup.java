@@ -1,6 +1,7 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  *
@@ -12,16 +13,15 @@ import java.util.ArrayList;
  */
 public class DiscussionGroup {
 
-	private int id;
-	private String name;
+    private int id;
+    private String name;
 
-	private ArrayList<User> users;
-	private ArrayList<Post> posts;
+    private ArrayList<Post> posts;
 
-	public DiscussionGroup() {
-        users = new ArrayList<>();
+    public DiscussionGroup() {
+
         posts = new ArrayList<>();
-	}
+    }
 
     public int getId() {
         return id;
@@ -39,13 +39,6 @@ public class DiscussionGroup {
         this.name = name;
     }
 
-    public ArrayList<User> getUsers() {
-        return users;
-    }
-
-    public void addUser(User user) {
-        users.add(user);
-    }
 
     public ArrayList<Post> getPosts() {
         return posts;
