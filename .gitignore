@@ -2,4 +2,5 @@
 .DS_Store
 *.class
 /InterestGroup_S/build/
+/InterestGroup_SS/nbproject/private/
 /InterestGroup_C/build/
