@@ -23,7 +23,7 @@ public class client{
             do {
                 String command = input.nextLine();
                 out.println(command);
-                out.flush();
+//                out.flush();
 
                 out.println("BYE");
                 out.flush();
