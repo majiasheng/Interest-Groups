@@ -28,6 +28,7 @@ public class DataManager {
     public static final String DEFAULT_PATH = "src/saved/";     
     public static final String JSON_EXTENSION = ".json";     
     public static final String USER_ID = "USER_ID";
+    public static final String USER_NAME = "USER_NAME";
     public static final String SUBSCRIBED_GROUPS = "SUBSCRIBED_GROUPS";
     public static final String POSTS = "POSTS";
     
@@ -47,8 +48,9 @@ public class DataManager {
         
     }
     
-    protected void saveUserData(Path saveTo) {
+    public  void saveUserData(User user, Path saveTo) {
         JsonFactory jsonFactory = new JsonFactory();
+        this.user = (User) user;
        
         try (OutputStream out = Files.newOutputStream(saveTo)) {
             JsonGenerator generator = jsonFactory.createGenerator(out, JsonEncoding.UTF8);
@@ -56,6 +58,7 @@ public class DataManager {
 
             // store ID
             generator.writeStringField(USER_ID, user.getId());
+            generator.writeStringField(USER_NAME, user.getId());
             // store subscribed groups
             generator.writeFieldName(SUBSCRIBED_GROUPS);
             generator.writeStartArray(user.getSubscribedGroups().size());
@@ -73,10 +76,13 @@ public class DataManager {
         
     }
     
-    protected void loadUserData(Path loadFrom) throws IOException {
+    public void loadUserData(User user, Path loadFrom) throws IOException {
+        
         JsonFactory jsonFactory = new JsonFactory();
         JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));
 
+        this.user = (User) user;
+        
         while(!jsonParser.isClosed()) {
             JsonToken token = jsonParser.nextToken();
             if (JsonToken.FIELD_NAME.equals(token)) {
@@ -86,10 +92,13 @@ public class DataManager {
                         jsonParser.nextToken();
                         user.setId(jsonParser.getValueAsString());
                         break;
+                    case USER_NAME:
+                        jsonParser.nextToken();
+                        user.setName(jsonParser.getValueAsString());
                     case SUBSCRIBED_GROUPS:
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            user.addSubscribedGroup(jsonParser.getValueAsString());
+                            user.subscribedGroup(jsonParser.getValueAsString());
                         break;
                     default:
                         throw new JsonParseException(jsonParser, "Unable to load JSON data");

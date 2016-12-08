@@ -15,6 +15,7 @@ public class User {
     private File   userDataFile;
     private DataManager manager;
     private ArrayList<String> subscribedGroups;
+    private ArrayList<Post> posts;
     //TODO: groups have posts, and each posts has a read-or-not status
     
     private ArrayList<DiscussionGroup> groups;
@@ -51,6 +52,10 @@ public class User {
         this.name = name;
     }
 
+    /**
+     * For ag command, get all existing groups
+     * @return 
+     */
     public ArrayList<DiscussionGroup> getGroups() {
         return groups;
     }
@@ -59,23 +64,47 @@ public class User {
         groups.add(group);
     }
     
+    /**
+     * For rg command, read all posts under the specified group
+     * @param group, read the posts under the given group 
+     */
+    public void getPosts(DiscussionGroup group) {
+        
+    }
+    
+    /**
+     * For sg command, get all subscribed groups
+     * @return 
+     */
     public ArrayList<String> getSubscribedGroups() {
         return subscribedGroups;
     }
     
-    /*
-    * add subscribed group to the subscribed group list
-    * @param subscribedGroup: a group
-    */
-    public void addSubscribedGroup(String subscribedGroup) {
-        this.subscribedGroups.add(subscribedGroup);
-    }
-    
-    /*
-    * load a new set of subscribed groups (initially, load to a new User obj)
-    */
+    /**
+     * Load a new set of subscribed groups (initially, load to a new User obj)
+     * @param subscribedGroups 
+     */
     public void setSubscribedGroups(ArrayList<String> subscribedGroups) {
         this.subscribedGroups = subscribedGroups;
     }
+    
+    /**
+     * For sg command
+     * Subscribe to a group
+     * @param subscribedGroup: add this group to the subscribed group list
+     **/
+    public void subscribedGroup(String subscribedGroup) {
+        this.subscribedGroups.add(subscribedGroup);
+    }
+    
+    /**
+     * For sg command
+     * @param group, remove this group from the subscribed group list
+     */
+    public void unsubscribedGroup(String group) {
+        this.subscribedGroups.remove(group);
+    }
+    
+    
     
 }

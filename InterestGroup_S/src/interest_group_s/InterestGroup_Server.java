@@ -2,9 +2,12 @@ package interest_group_s;
 
 //import com.fasterxml.jackson.core.*;
 import data.Constants;
+import static data.Constants.DEFAULT_PATH;
+import static data.Constants.JSON_EXTENSION;
+import data.DataManager;
 import data.DiscussionGroup;
 import data.User;
-import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -118,7 +121,7 @@ public class InterestGroup_Server {
         ArrayList<Object> clientRequestList = (ArrayList<Object>)clientRequest;
         
         // return value
-        Object rtval;
+        Object rtval = new User();
         
         // get state
         State state = (State)clientRequestList.get(0);  
@@ -141,7 +144,13 @@ public class InterestGroup_Server {
                         and create a new entry for this user object in db
                         and return it to the client
             */
-            rtval = new User("333");
+            User user3 = new User("333");
+            File file = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
+            DataManager dm = new DataManager();
+            dm.loadUserData(user3, file.toPath());
+            rtval = user3;
+            
+            
             
         } else if(state == State.IN_AG_CMD) {
             
@@ -154,7 +163,7 @@ public class InterestGroup_Server {
         // first check if the client request is LOGOUT
         // if so, may want to update database and detach the thread
         
-        return null;
+        return rtval;
 
     }
 

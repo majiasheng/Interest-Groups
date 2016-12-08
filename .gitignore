@@ -2,5 +2,12 @@
 .DS_Store
 *.class
 /InterestGroup_S/build/
-/InterestGroup_SS/nbproject/private/
+/InterestGroup_S/nbproject/private/
+/InterestGroup_S/manifest.mf
+/InterestGroup_S/build.xml
+
 /InterestGroup_C/build/
+/InterestGroup_C/nbproject/private
+/InterestGroup_C/manifest.mf
+/InterestGroup_C/build.xml
+
