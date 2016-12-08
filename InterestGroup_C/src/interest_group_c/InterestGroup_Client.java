@@ -24,7 +24,7 @@ import java.util.Scanner;
  */
 public class InterestGroup_Client {
     static User user;
-    static State state;     // user state in the session
+    static String state;     // user state in the session
     static String command;  // user command
     static Object response; // server response
     /**
@@ -33,7 +33,7 @@ public class InterestGroup_Client {
     public static void main(String[] args) {
         ObjectInputStream input_from_server;
         ObjectOutputStream output_to_server;
-        Socket socket;
+//        Socket socket;
         Scanner user_input_scn;
         
         // get hostmachine and port number 
@@ -42,14 +42,15 @@ public class InterestGroup_Client {
         
         // user is not logged in yet 
         state = State.NOT_LOGGED_IN;
+        user = null;
         
             try{
                 // user input scanner
                 user_input_scn = new Scanner(System.in);
                 // create socket
-                socket = new Socket("localhost", 6666);
-                
+                Socket socket = new Socket("localhost", 6666);
                 System.out.println(">> Connected to localhost at 6666\n");
+                
 //                // create socket with hostmachine and portnumber 
 //                Socket socket = new Socket(hostmachine, portnumber);
 //                // feedback: connected to hostmachine 
@@ -81,27 +82,33 @@ public class InterestGroup_Client {
                             package user command before sending it to server
                             but if it is not logged in, just send the command
                     *****************************/                        
-                    if(state == State.NOT_LOGGED_IN) {
+                    if(state.equals(State.NOT_LOGGED_IN)) {
                         // tokenize command and check the first token 
-                        String cmd = tokenizeCMD(command).get(0);
-                        if(!cmd.equals(Constants.LOGIN)){
+                        String cmdTokens = tokenizeCMD(command).get(0);
+                        if(!cmdTokens.equals(Constants.LOGIN)){
                             // feedback: not logged in
                             System.out.println(">> Please log in first\n");
                             continue;
                         } else {
                             // send login command to server
                             output_to_server.writeObject((Object)(formatCMD(command)));
+                            output_to_server.flush();
                         }
                     } else {
-                        output_to_server.writeObject((Object)(formatCMD(command)));
+                        if(isCMDValid(command)) {
+                            output_to_server.writeObject((Object)(formatCMD(command)));
+                            output_to_server.flush();
+                        } else {
+                            System.out.println(">> Type \"help\" to see available commands");
+                            continue;
+                        }
                     }
-                    output_to_server.flush();
                     
                     /*****************************
                         get response from server
                      *****************************/
                     response = input_from_server.readObject();
-                    System.out.println(" >> 200 OK >>");
+                    System.out.println("200 OK ");
                     handleServerResponse(response, input_from_server, output_to_server, user_input_scn);
                 } while (true);
 
@@ -119,7 +126,7 @@ public class InterestGroup_Client {
      * @param response
      * @param input_from_server
      * @param output_to_server
-     * @param user_input 
+     * @param user_input_scn 
      */
     public static void handleServerResponse(Object response, ObjectInputStream input_from_server, 
                                             ObjectOutputStream output_to_server, Scanner user_input_scn) {
@@ -148,6 +155,10 @@ public class InterestGroup_Client {
                 System.out.print(">> ");
                 command = user_input_scn.nextLine();
                 if(command.equals("q")) {
+                    System.out.println("################################");
+                    System.out.println("#          main menu           #");
+                    System.out.println("################################");
+                    state = State.LOGGED_IN;
                     break;
                 } else if(command.equals("s") || command.equals("u") || command.equals("n")) {
                     ag_handler(command);
@@ -168,6 +179,10 @@ public class InterestGroup_Client {
                 System.out.print(">> ");
                 command = user_input_scn.nextLine();
                 if(command.equals("q")) {
+                    System.out.println("################################");
+                    System.out.println("#          main menu           #");
+                    System.out.println("################################");
+                    state = State.LOGGED_IN;
                     break;
                 } else if(command.equals("u") || command.equals("n")) {
                     sg_handler(command);
@@ -188,6 +203,10 @@ public class InterestGroup_Client {
                 System.out.print(">> ");
                 command = user_input_scn.nextLine();
                 if(command.equals("q")) {
+                    System.out.println("################################");
+                    System.out.println("#          main menu           #");
+                    System.out.println("################################");
+                    state = State.LOGGED_IN;
                     break;
                 } 
                 //TODO: the subcommand can be a number as an id, if it is a number, 
@@ -205,11 +224,17 @@ public class InterestGroup_Client {
                                   load user info if it is in the data bases
             */
             state = State.LOGGED_IN;
-            user = (User)responseTokens.get(0);
+//            user = (User)responseTokens.get(0);
+            
+            user = (User)response;
+            
             /*TODO: store user info locally (if user data already exists, 
             overwrite it)*/
             
             System.out.println("User " /*+ user.getId() */+ " created" );
+        } else if(cmd.equals(Constants.LOGOUT)) {
+            //TODO: close sockets and exit
+            
         }
     }
     
@@ -234,9 +259,9 @@ public class InterestGroup_Client {
         ArrayList<Object> formattedCMD = new ArrayList<>();
         ArrayList<String> cmdTokens = tokenizeCMD(command);
         
-//        formattedCMD.add(state);
+        formattedCMD.add(state);
         //testing         
-        formattedCMD.add(null);
+//        formattedCMD.add(null);
         
         formattedCMD.add(cmdTokens);
         formattedCMD.add(user);
@@ -263,7 +288,7 @@ public class InterestGroup_Client {
         // TODO: format help menu, add sub commands
         System.out.println("###############################################");
         System.out.println("# help                print this menu         #");
-        System.out.println("# login USEID         log in                  #");
+        System.out.println("# login USERID        log in with user id     #");
         System.out.println("# ag                  show all groups         #");
         System.out.println("# sg                  show subscribed groups  #");
         System.out.println("# rg                  read groups             #");
@@ -301,5 +326,26 @@ public class InterestGroup_Client {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    private static boolean isCMDValid(String command) {
+        //TODO: probably need to check if the specify command is valid
+        ArrayList<String> cmdTokens = tokenizeCMD(command);
+        String cmd = cmdTokens.get(0);
+        if((cmd.equals(Constants.AG)) || (cmd.equals(Constants.SG))
+        || (cmd.equals(Constants.RG)) || (cmd.equals(Constants.HELP))
+        || (cmd.equals(Constants.LOGOUT)) ) {
+            return true;
+        } else if(cmd.equals(Constants.LOGIN)) {
+            //TODO:
+            if(cmdTokens.size() != 2 /*|| cmdTokens.get(1)*/) {
+                // if the second argument is not valid digits in 0 - 999999999, return  false 
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+
+    }
     
 }

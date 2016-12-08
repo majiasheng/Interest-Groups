@@ -1,5 +1,6 @@
 package data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Discussion Group
  */
-public class DiscussionGroup {
+public class DiscussionGroup  implements Serializable{
 
 	private int id;
 	private String name;

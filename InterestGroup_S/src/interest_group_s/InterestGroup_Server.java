@@ -1,6 +1,6 @@
 package interest_group_s;
 
-//import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.core.*;
 import interest_group_s.State;
 import data.Constants;
 import static data.Constants.DEFAULT_PATH;
@@ -61,7 +61,7 @@ public class InterestGroup_Server {
                 input_from_client = new ObjectInputStream(connectionSocket.getInputStream());
                 
                 
-                Object response;
+                User response;
 
                 while(true){
                     /************************************
@@ -69,21 +69,20 @@ public class InterestGroup_Server {
                     ************************************/
                     clientRequest = input_from_client.readObject();
                     // testing 
-                    System.out.println(clientRequest);
+                    System.out.println("Client request: " + clientRequest);
 
                     // // handles client's request
                     response = handleClientRequest(clientRequest);
-
-                    // // respond to client request
-                    output_to_client.writeObject((Object)response);
+                    // respond to client request
+                    
+                    output_to_client.writeObject(response);
+                    
                 }
             } catch (IOException ex) {
                 Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
-                ex.printStackTrace();
 //                System.out.println("IO EXCEPTION");
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
-                ex.printStackTrace();
 //                System.out.println("CLASS NOT FOUND EXCEPTION ");
             }
 
@@ -124,20 +123,17 @@ public class InterestGroup_Server {
      *              Format: State, command(as array list), user object
      * and handles the request 
      */
-    public static Object handleClientRequest(Object clientRequest) throws IOException {
+    public static User handleClientRequest(Object clientRequest) throws IOException {
         ArrayList<Object> clientRequestList = (ArrayList<Object>)clientRequest;
         
-        // return value
-        Object rtval = new User();
-        
         // get state
-        State state = (State)clientRequestList.get(0);  
+        String state = (String)clientRequestList.get(0);  
         // get command in the form of array list 
         ArrayList<String> command = (ArrayList<String>)clientRequestList.get(1);
         // get user object 
         User user = (User)clientRequestList.get(2);
         
-        if(state == State.NOT_LOGGED_IN) {
+        if(/*state.equals(State.NOT_LOGGED_IN) && */command.get(0).equals(Constants.LOGIN)) {
             // log user in 
             String cmd = command.get(0); // login
             String id = command.get(1); // user id
@@ -151,26 +147,34 @@ public class InterestGroup_Server {
                         and create a new entry for this user object in db
                         and return it to the client
             */
-            User user3 = new User("333");
-            File file = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
-            DataManager dm = new DataManager();
-            dm.loadUserData(user3, file.toPath());
-            rtval = user3;
+//            User user3 = new User("333");
+            //FIXME: shouldnt use user.getID because user isnt constructed yet in client side 
+            //       instead, use the command's id argument
+//            File file = new File(DEFAULT_PATH + id + JSON_EXTENSION);
+//            DataManager dm = new DataManager();
+//            dm.loadUserData(user3, file.toPath());
+            System.out.println("returning user " + id);
+            User u = new User("sdf");
+            return(u);
             
-            
-            
-        } else if(state == State.IN_AG_CMD) {
-            
-        } else if(state == State.IN_SG_CMD) {
-            
-        } else if(state == State.IN_RG_CMD) {
-            
+        } else if(command.get(0).equals(Constants.AG)) {
+            System.out.println("DEBUG: client sent ag");
+            return null;
+        } else if(command.get(0).equals(Constants.SG)) {
+            System.out.println("DEBUG: client sent sg");
+            return null;
+        } else if(command.get(0).equals(Constants.RG)) {
+            System.out.println("DEBUG: client sent rg");
+            return null;
+        } else if(command.get(0).equals(Constants.LOGOUT)) {
+            // first check if the client request is LOGOUT
+            // if so, may want to update database and detach the thread
+            return null;
+        } else {
+            return null;
         }
         
-        // first check if the client request is LOGOUT
-        // if so, may want to update database and detach the thread
         
-        return rtval;
 
     }
 

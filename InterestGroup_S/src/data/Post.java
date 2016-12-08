@@ -1,5 +1,7 @@
 package data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author majiasheng
@@ -8,14 +10,14 @@ package data;
 /**
  * 
  */
-public class Post {
-	private String group;
-	private String subject;
-	private String author;
-	private String date;
+public class Post  implements Serializable{
+    private String group;
+    private String subject;
+    private String author;
+    private String date;
 
-	public Post() {
-		
-	}
+    public Post() {
+
+    }
 
 }

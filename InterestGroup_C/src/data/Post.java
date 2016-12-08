@@ -1,5 +1,6 @@
 package data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 /**
  * 
  */
-public class Post {
+public class Post implements Serializable{
 	private String group;
 	private String subject;
 	private String author;

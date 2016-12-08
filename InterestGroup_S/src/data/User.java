@@ -14,7 +14,7 @@ public class User implements Serializable{
     private String id;
     private String name;
     private File   userDataFile;
-    private DataManager manager;
+//    private DataManager manager;
     private ArrayList<String> subscribedGroups;
     private ArrayList<Post> posts;
     //TODO: groups have posts, and each posts has a read-or-not status
@@ -34,7 +34,7 @@ public class User implements Serializable{
             g = new DiscussionGroup();
         }
         subscribedGroups = new ArrayList<String>();
-        manager = new DataManager(this);
+//        manager = new DataManager(this);
     }
 
     public String getId() {

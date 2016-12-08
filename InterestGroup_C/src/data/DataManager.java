@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.core.*;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import static java.lang.ProcessBuilder.Redirect.to;
 import java.nio.file.Files;
 import java.util.logging.Level;
@@ -20,7 +21,7 @@ import java.util.logging.Logger;
  * This class manages user data. Every user has a DataManager object for saving
  * and loading his information
  */
-public class DataManager {
+public class DataManager  implements Serializable{
     private ArrayList<User>    users;
     private File               userDataFile;
     private User               user;
