@@ -4,7 +4,7 @@
  *
  * @author Jia Sheng Ma
  */
-
+import interest_group_c.State;
 import data.Constants;
 import data.User;
 import java.io.BufferedReader;
@@ -26,7 +26,7 @@ public class InterestGroup_Client {
     static User user;
     static State state;     // user state in the session
     static String command;  // user command
-    static String response; // server response
+    static Object response; // server response
     /**
      * @param args the command line arguments
      */
@@ -55,7 +55,7 @@ public class InterestGroup_Client {
 //                // feedback: connected to hostmachine 
 //                System.out.println(">> Connected to " + hostmachine + "\n");
 
-                // output buffer (tp server)
+                // output buffer (to server)
                 output_to_server = new ObjectOutputStream(socket.getOutputStream());
                 // input buffer (from server)
                 input_from_server = new ObjectInputStream(socket.getInputStream());
@@ -86,22 +86,22 @@ public class InterestGroup_Client {
                         String cmd = tokenizeCMD(command).get(0);
                         if(!cmd.equals(Constants.LOGIN)){
                             // feedback: not logged in
-                            System.out.println(">> Please log in \n");
+                            System.out.println(">> Please log in first\n");
                             continue;
                         } else {
                             // send login command to server
-                            output_to_server.writeObject(formatCMD(command));
+                            output_to_server.writeObject((Object)(formatCMD(command)));
                         }
                     } else {
-                        output_to_server.writeObject(formatCMD(command));
+                        output_to_server.writeObject((Object)(formatCMD(command)));
                     }
-                    
                     output_to_server.flush();
                     
                     /*****************************
                         get response from server
                      *****************************/
-                    response = (String)input_from_server.readObject();
+                    response = input_from_server.readObject();
+                    System.out.println(" >> 200 OK >>");
                     handleServerResponse(response, input_from_server, output_to_server, user_input_scn);
                 } while (true);
 
@@ -135,7 +135,9 @@ public class InterestGroup_Client {
             responseTokens[1] should be data for user's request
             etc.. 
         */
-        if(command.equals(Constants.AG)) {
+        String cmd = tokenizeCMD(command).get(0);
+        
+        if(cmd.equals(Constants.AG)) {
             System.out.println("################################");
             System.out.println("#          all groups          #");
             System.out.println("################################");
@@ -155,7 +157,7 @@ public class InterestGroup_Client {
                 }
             } while(true);
             
-        } else if(command.equals(Constants.SG)) {
+        } else if(cmd.equals(Constants.SG)) {
             System.out.println("################################");
             System.out.println("#       subscribed groups      #");
             System.out.println("################################");
@@ -175,7 +177,7 @@ public class InterestGroup_Client {
                 }
                 
             } while(true);
-        } else if(command.equals(Constants.RG)) {
+        } else if(cmd.equals(Constants.RG)) {
             System.out.println("################################");
             System.out.println("#          read groups         #");
             System.out.println("################################");
@@ -198,14 +200,16 @@ public class InterestGroup_Client {
                 }
                 
             } while(true);
-        } else if(command.equals(Constants.LOGIN)) {
+        } else if(cmd.equals(Constants.LOGIN)) {
             /* TODO: create user, store user info locally if it is a new user
                                   load user info if it is in the data bases
             */
+            state = State.LOGGED_IN;
             user = (User)responseTokens.get(0);
             /*TODO: store user info locally (if user data already exists, 
             overwrite it)*/
             
+            System.out.println("User " /*+ user.getId() */+ " created" );
         }
     }
     
@@ -230,7 +234,10 @@ public class InterestGroup_Client {
         ArrayList<Object> formattedCMD = new ArrayList<>();
         ArrayList<String> cmdTokens = tokenizeCMD(command);
         
-        formattedCMD.add(state);
+//        formattedCMD.add(state);
+        //testing         
+        formattedCMD.add(null);
+        
         formattedCMD.add(cmdTokens);
         formattedCMD.add(user);
         

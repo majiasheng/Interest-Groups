@@ -3,13 +3,14 @@ package data;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author Ruoping Lin
  */
-public class User {
+public class User implements Serializable{
     private String id;
     private String name;
     private File   userDataFile;

@@ -1,6 +1,7 @@
 package interest_group_s;
 
 //import com.fasterxml.jackson.core.*;
+import interest_group_s.State;
 import data.Constants;
 import static data.Constants.DEFAULT_PATH;
 import static data.Constants.JSON_EXTENSION;
@@ -54,13 +55,12 @@ public class InterestGroup_Server {
             // create input/output channels 
             ObjectInputStream input_from_client;
             ObjectOutputStream output_to_client;
-            try {
-                
-                System.out.println("creating in out stream");
-                input_from_client = new ObjectInputStream(connectionSocket.getInputStream());
+            try 
+            {
                 output_to_client = new ObjectOutputStream(connectionSocket.getOutputStream());
+                input_from_client = new ObjectInputStream(connectionSocket.getInputStream());
                 
-                System.out.println("finish creating in out stream");
+                
                 Object response;
 
                 while(true){
@@ -69,20 +69,22 @@ public class InterestGroup_Server {
                     ************************************/
                     clientRequest = input_from_client.readObject();
                     // testing 
-//                    System.out.println((String)clientRequest);
+                    System.out.println(clientRequest);
 
                     // // handles client's request
                     response = handleClientRequest(clientRequest);
 
                     // // respond to client request
-                    // output_to_client.writeObject(response);
+                    output_to_client.writeObject((Object)response);
                 }
             } catch (IOException ex) {
-//                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("ERROR");
+                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
+//                System.out.println("IO EXCEPTION");
             } catch (ClassNotFoundException ex) {
-//                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("CLIENT EXITED");
+                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
+//                System.out.println("CLASS NOT FOUND EXCEPTION ");
             }
 
         }
@@ -94,20 +96,25 @@ public class InterestGroup_Server {
         //TODO: initialize data structures
         clients = new ArrayList<>();
 
-        System.out.println("Starting server...");
+        System.out.println("Starting server ...");
         ServerSocket welcomeSocket = new ServerSocket(6666);
-        System.out.println("Listening...");
+        System.out.println("Listening for clients ...");
 
         while(true) {
             try {
                 Socket connectionSocket = welcomeSocket.accept();
-                System.out.println("new client " + connectionSocket.toString());
+                System.out.println(">> New client from " + connectionSocket.toString());
+                
+                // add client to the list of clients
+                //TODO: remove it from the list when it logs out 
+                clients.add(connectionSocket);
+                
                 // make a worker server for each of the connected clients 
                 WorkerServer workerServer = new WorkerServer(connectionSocket);
                 workerServer.start();
 
             } catch(Exception e) {
-                System.out.println("ERROR");
+                System.out.println("ERROR IN RECEIVING CLIENT CONNECTION");
             }
         } 
     }
