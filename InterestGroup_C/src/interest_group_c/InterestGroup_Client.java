@@ -25,7 +25,8 @@ import java.util.Scanner;
 public class InterestGroup_Client {
     static User user;
     static State state;     // user state in the session
-    
+    static String command;  // user command
+    static String response; // server response
     /**
      * @param args the command line arguments
      */
@@ -33,6 +34,7 @@ public class InterestGroup_Client {
         ObjectInputStream input_from_server;
         ObjectOutputStream output_to_server;
         Socket socket;
+        Scanner user_input_scn;
         
         // get hostmachine and port number 
 //        String hostmachine = args[1];
@@ -40,13 +42,10 @@ public class InterestGroup_Client {
         
         // user is not logged in yet 
         state = State.NOT_LOGGED_IN;
+        
             try{
                 // user input scanner
-                Scanner user_input_scn = new Scanner(System.in);
-                // user command
-                String command; 
-                // server response
-                String response;
+                user_input_scn = new Scanner(System.in);
                 // create socket
                 socket = new Socket("localhost", 6666);
                 
@@ -120,9 +119,10 @@ public class InterestGroup_Client {
      * @param output_to_server
      * @param user_input 
      */
-    public static void handleServerResponse(String response, ObjectInputStream input_from_server, 
-                                            ObjectOutputStream output_to_server, Scanner user_input) {
-        String[] responseTokens;
+    public static void handleServerResponse(Object response, ObjectInputStream input_from_server, 
+                                            ObjectOutputStream output_to_server, Scanner user_input_scn) {
+        ArrayList<Object> responseTokens;
+        //TODO: using Object[] should work
         responseTokens = parseResponse(response);
         //TODO: need to discuss about the format for response
         /* a sample response format: 
@@ -133,37 +133,76 @@ public class InterestGroup_Client {
             responseTokens[1] should be data for user's request
             etc.. 
         */
-        if(responseTokens[0].equals(Constants.AG)) {
+        if(command.equals(Constants.AG)) {
             System.out.println("################################");
             System.out.println("#          all groups          #");
             System.out.println("################################");
-            //TODO: set current state as "ag"
+            // update current state as "ag"
+            state = State.IN_AG_CMD;
             
             do { // listen for user commands 
-                
+                System.out.print(">> ");
+                command = user_input_scn.nextLine();
+                if(command.equals("q")) {
+                    break;
+                } else if(command.equals("s") || command.equals("u") || command.equals("n")) {
+                    ag_handler(command);
+                } else {
+                    System.out.println("ERROR: NO SUCH COMMAND");
+                    printSubcmd_AG();
+                }
             } while(true);
-        } else if(responseTokens[0].equals(Constants.SG)) {
+            
+        } else if(command.equals(Constants.SG)) {
             System.out.println("################################");
             System.out.println("#       subscribed groups      #");
             System.out.println("################################");
-            //TODO: set current state as "sg"
+            // update current state as "sg"
+            state = State.IN_SG_CMD;
             
             do { // listen for user commands 
+                System.out.print(">> ");
+                command = user_input_scn.nextLine();
+                if(command.equals("q")) {
+                    break;
+                } else if(command.equals("u") || command.equals("n")) {
+                    sg_handler(command);
+                } else {
+                    System.out.println("ERROR: NO SUCH COMMAND");
+                    printSubcmd_SG();
+                }
                 
             } while(true);
-        } else if(responseTokens[0].equals(Constants.RG)) {
+        } else if(command.equals(Constants.RG)) {
             System.out.println("################################");
             System.out.println("#          read groups         #");
             System.out.println("################################");
-            //TODO: set current state as "rg"
+            // update current state as "rg"
+            state = State.IN_RG_CMD;
             
             do { // listen for user commands 
+                System.out.print(">> ");
+                command = user_input_scn.nextLine();
+                if(command.equals("q")) {
+                    break;
+                } 
+                //TODO: the subcommand can be a number as an id, if it is a number, 
+                // a sub sub command interface should be displayed
+                else if(command.equals("r") || command.equals("n") || command.equals("p")) {
+                    rg_handler(command);
+                } else {
+                    System.out.println("ERROR: NO SUCH COMMAND");
+                    printSubcmd_RG();
+                }
                 
             } while(true);
-        } else if(responseTokens[0].equals(Constants.LOGIN)) {
+        } else if(command.equals(Constants.LOGIN)) {
             /* TODO: create user, store user info locally if it is a new user
                                   load user info if it is in the data bases
             */
+            user = (User)responseTokens.get(0);
+            /*TODO: store user info locally (if user data already exists, 
+            overwrite it)*/
             
         }
     }
@@ -202,7 +241,7 @@ public class InterestGroup_Client {
      * @param response
      * @return all the info from the response as tokens
      */
-    public static String[] parseResponse(String response) {
+    public static ArrayList<Object> parseResponse(Object response) {
     // String[] responseTokens = new String[];
         
         return null;
@@ -222,5 +261,36 @@ public class InterestGroup_Client {
         System.out.println("###############################################");
 
     }
+
+    private static void printSubcmd_AG() {
+        System.out.println("s HEAD [TAIL] – subscribe to groups in range of HEAD and TAIL (TAIL is optional)\n"
+                         + "u HEAD [TAIL] – unsubscribe\n"
+                         + "n – lists the next N discussion groups\n" 
+                         + "q – exits from the ag command\n");
+    }
+    /**
+     * Takes "s" "u" or "n" as argument, performs operations pertaining to each command
+     * @param command 
+     */
+    private static void ag_handler(String command) {
+        //TODO:
+    }
+
+    private static void printSubcmd_SG() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private static void sg_handler(String command) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private static void printSubcmd_RG() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private static void rg_handler(String command) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
     
 }
