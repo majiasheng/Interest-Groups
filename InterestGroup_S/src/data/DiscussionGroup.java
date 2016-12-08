@@ -14,6 +14,7 @@ public class DiscussionGroup {
 
 	private int id;
 	private String name;
+        private String groupName;
 
 	private ArrayList<User> users;
 	private ArrayList<Post> posts;
@@ -22,4 +23,11 @@ public class DiscussionGroup {
 
 	}
 
+        public String getGroupName() {
+            return this.groupName;
+        }
+        
+        public void setGroupName(String groupName) {
+            this.groupName = groupName;
+        }
 }

@@ -31,7 +31,7 @@ public class User {
             g = new DiscussionGroup();
         }
         subscribedGroups = new ArrayList<String>();
-        manager = new DataManager(this);
+//        manager = new DataManager(this);
 
     }
 
