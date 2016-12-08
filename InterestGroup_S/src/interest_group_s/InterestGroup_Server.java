@@ -4,6 +4,7 @@ package interest_group_s;
 import data.Constants;
 import data.DiscussionGroup;
 import data.User;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -68,16 +69,17 @@ public class InterestGroup_Server {
 //                    System.out.println((String)clientRequest);
 
                     // // handles client's request
-                     response = handleClientRequest(clientRequest);
+                    response = handleClientRequest(clientRequest);
 
                     // // respond to client request
                     // output_to_client.writeObject(response);
                 }
             } catch (IOException ex) {
-                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println("ERROR");
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("CLIENT EXITED");
             }
 
         }
@@ -112,7 +114,7 @@ public class InterestGroup_Server {
      *              Format: State, command(as array list), user object
      * and handles the request 
      */
-    public static Object handleClientRequest(Object clientRequest) {
+    public static Object handleClientRequest(Object clientRequest) throws IOException {
         ArrayList<Object> clientRequestList = (ArrayList<Object>)clientRequest;
         
         // return value

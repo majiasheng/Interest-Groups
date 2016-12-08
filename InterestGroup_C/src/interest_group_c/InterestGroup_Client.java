@@ -82,7 +82,9 @@ public class InterestGroup_Client {
                             but if it is not logged in, just send the command
                     *****************************/                        
                     if(state == State.NOT_LOGGED_IN) {
-                        if(!command.equals(Constants.LOGIN)){
+                        // tokenize command and check the first token 
+                        String cmd = tokenizeCMD(command).get(0);
+                        if(!cmd.equals(Constants.LOGIN)){
                             // feedback: not logged in
                             System.out.println(">> Please log in \n");
                             continue;
