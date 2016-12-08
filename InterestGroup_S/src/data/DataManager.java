@@ -98,7 +98,7 @@ public class DataManager {
                     case SUBSCRIBED_GROUPS:
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            user.addSubscribedGroup(jsonParser.getValueAsString());
+                            user.subscribedGroup(jsonParser.getValueAsString());
                         break;
                     default:
                         throw new JsonParseException(jsonParser, "Unable to load JSON data");
