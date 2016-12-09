@@ -37,19 +37,11 @@ public class DataManager implements Serializable{
         
     }
     
-    
-    public DataManager(User user) throws IOException{
-        this.user = user;
-//        userDataFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
-        //@todo: check the existence of user data file, create one if not
-        
-    }
-    
     private void checkExistenceOfUser() {
         
     }
     
-    public  void saveUserData(User user, Path saveTo) {
+    public void saveUserData(User user, Path saveTo) {
         JsonFactory jsonFactory = new JsonFactory();
         this.user = (User) user;
        
@@ -108,6 +100,33 @@ public class DataManager implements Serializable{
         }
         
     }
+    
+    /**
+     * Loads all existing users from data base
+     * @return list of existing users from data base
+     */
+    public ArrayList<User> loadAllUsers() {
+        ArrayList<User> allUsers = new ArrayList<>();
+        
+        //TODO: load all users from data base
+        
+        return allUsers;
+    }
+    
+    /**
+     * Loads all existing discussion from data base
+     * @return list of existing discussion groups from data base
+     */
+    public ArrayList<DiscussionGroup> loadAllGroups() {
+        ArrayList<DiscussionGroup> allGroups = new ArrayList<>();
+        
+        //TODO: load all discussion groups from data base
+        //TODO: load all posts pertaining to the discussion groups and construct a wholesome list of groups
+        
+        return allGroups;
+    }
+    
+    //TODO: probably need another method here for loading disuccion groups
     
     
 }

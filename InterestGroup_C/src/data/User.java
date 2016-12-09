@@ -1,5 +1,6 @@
 package data;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -9,14 +10,13 @@ import java.util.ArrayList;
  *
  * @author Ruoping Lin
  */
-public class User implements Serializable {
+public class User implements Serializable{
     private String id;
     private String name;
     private File   userDataFile;
-//    private DataManager manager;
     private ArrayList<String> subscribedGroups;
-    private ArrayList<Post> posts;
-    //TODO: groups have posts, and each posts has a read-or-not status
+//    private ArrayList<Post> posts; // not need because posts are in discussion groups
+    
     
     private ArrayList<DiscussionGroup> groups;
     //TODO: groups have posts, and each posts has a read-or-not status
@@ -24,7 +24,7 @@ public class User implements Serializable {
     public User() {
         
     }
-    public User(String id) throws IOException {
+    public User(String id) {
         this.id = id;
         
         // initialize groups
@@ -33,7 +33,6 @@ public class User implements Serializable {
             g = new DiscussionGroup();
         }
         subscribedGroups = new ArrayList<String>();
-//        manager = new DataManager(this);
     }
 
     public String getId() {

@@ -31,8 +31,8 @@ public class InterestGroup_Client {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        ObjectInputStream input_from_server;
         ObjectOutputStream output_to_server;
+        ObjectInputStream input_from_server;
 //        Socket socket;
         Scanner user_input_scn;
         
@@ -99,7 +99,7 @@ public class InterestGroup_Client {
                             output_to_server.writeObject((Object)(formatCMD(command)));
                             output_to_server.flush();
                         } else {
-                            System.out.println(">> Type \"help\" to see available commands");
+                            System.out.println(">> No such command. Type \"help\" to see available commands");
                             continue;
                         }
                     }
@@ -130,18 +130,14 @@ public class InterestGroup_Client {
      */
     public static void handleServerResponse(Object response, ObjectInputStream input_from_server, 
                                             ObjectOutputStream output_to_server, Scanner user_input_scn) {
-        ArrayList<Object> responseTokens;
-        //TODO: using Object[] should work
-        responseTokens = parseResponse(response);
-        //TODO: need to discuss about the format for response
-        /* a sample response format: 
-                | user_command | data for user's request     | state
-                |--------------+-----------------------------+--------
-                |  login       | user's info(in a format..)  | IN_AG_CMD
-            responseTokens[0] should be user_command
-            responseTokens[1] should be data for user's request
-            etc.. 
+        
+        /* server response is just an object depending one what 
+           request the client sent to the server 
+           1. if login cmd is sent: response = user : User
+           2. if ag    cmd is sent: response = allGroups : ArrayList<String>
+           3. //TODO: 
         */
+        
         String cmd = tokenizeCMD(command).get(0);
         
         if(cmd.equals(Constants.AG)) {
@@ -223,10 +219,12 @@ public class InterestGroup_Client {
             /* TODO: create user, store user info locally if it is a new user
                                   load user info if it is in the data bases
             */
-            state = State.LOGGED_IN;
-//            user = (User)responseTokens.get(0);
-            
+//            state = State.LOGGED_IN;
+////            user = (User)responseTokens.get(0);
+//            
 //            user = (User)response;
+            //DEBUG
+//            System.out.println(user.toString());
             
             /*TODO: store user info locally (if user data already exists, 
             overwrite it)*/
@@ -260,25 +258,11 @@ public class InterestGroup_Client {
         ArrayList<String> cmdTokens = tokenizeCMD(command);
         
         formattedCMD.add(state);
-        //testing         
-//        formattedCMD.add(null);
-        
         formattedCMD.add(cmdTokens);
         formattedCMD.add(user);
         
         return formattedCMD;
         
-    }
-    
-    /***
-     * Parses the formatted response message from server
-     * @param response
-     * @return all the info from the response as tokens
-     */
-    public static ArrayList<Object> parseResponse(Object response) {
-    // String[] responseTokens = new String[];
-        
-        return null;
     }
 
     /**

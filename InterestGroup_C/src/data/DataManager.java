@@ -1,5 +1,6 @@
 package data;
 
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -9,8 +10,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import static java.lang.ProcessBuilder.Redirect.to;
 import java.nio.file.Files;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -21,7 +20,7 @@ import java.util.logging.Logger;
  * This class manages user data. Every user has a DataManager object for saving
  * and loading his information
  */
-public class DataManager  implements Serializable{
+public class DataManager implements Serializable{
     private ArrayList<User>    users;
     private File               userDataFile;
     private User               user;
@@ -30,6 +29,7 @@ public class DataManager  implements Serializable{
     public static final String DEFAULT_PATH = "src/saved/";     
     public static final String JSON_EXTENSION = ".json";     
     public static final String USER_ID = "USER_ID";
+    public static final String USER_NAME = "USER_NAME";
     public static final String SUBSCRIBED_GROUPS = "SUBSCRIBED_GROUPS";
     public static final String POSTS = "POSTS";
     
@@ -37,20 +37,13 @@ public class DataManager  implements Serializable{
         
     }
     
-    
-    public DataManager(User user) {
-        this.user = user;
-//        userDataFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
-        //@todo: check the existence of user data file, create one if not
-        
-    }
-    
     private void checkExistenceOfUser() {
         
     }
     
-    protected void saveUserData(User user, Path saveTo) {
+    public void saveUserData(User user, Path saveTo) {
         JsonFactory jsonFactory = new JsonFactory();
+        this.user = (User) user;
        
         try (OutputStream out = Files.newOutputStream(saveTo)) {
             JsonGenerator generator = jsonFactory.createGenerator(out, JsonEncoding.UTF8);
@@ -58,6 +51,7 @@ public class DataManager  implements Serializable{
 
             // store ID
             generator.writeStringField(USER_ID, user.getId());
+            generator.writeStringField(USER_NAME, user.getId());
             // store subscribed groups
             generator.writeFieldName(SUBSCRIBED_GROUPS);
             generator.writeStartArray(user.getSubscribedGroups().size());
@@ -75,12 +69,14 @@ public class DataManager  implements Serializable{
         
     }
     
-    protected void loadUserData(User user, Path loadFrom) {
+    public void loadUserData(User user, Path loadFrom) throws IOException {
+        
         JsonFactory jsonFactory = new JsonFactory();
-        JsonParser  jsonParser;
-        try {
-            jsonParser = jsonFactory.createParser(Files.newInputStream(loadFrom));
-            while(!jsonParser.isClosed()) {
+        JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));
+
+        this.user = (User) user;
+        
+        while(!jsonParser.isClosed()) {
             JsonToken token = jsonParser.nextToken();
             if (JsonToken.FIELD_NAME.equals(token)) {
                 String fieldname = jsonParser.getCurrentName();
@@ -89,6 +85,9 @@ public class DataManager  implements Serializable{
                         jsonParser.nextToken();
                         user.setId(jsonParser.getValueAsString());
                         break;
+                    case USER_NAME:
+                        jsonParser.nextToken();
+                        user.setName(jsonParser.getValueAsString());
                     case SUBSCRIBED_GROUPS:
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
@@ -99,11 +98,35 @@ public class DataManager  implements Serializable{
                 }
             }
         }
-        } catch (IOException ex) {
-            System.out.println("Unable to load JSON file");
-        }
-
+        
     }
+    
+    /**
+     * Loads all existing users from data base
+     * @return list of existing users from data base
+     */
+    public ArrayList<User> loadAllUsers() {
+        ArrayList<User> allUsers = new ArrayList<>();
+        
+        //TODO: load all users from data base
+        
+        return allUsers;
+    }
+    
+    /**
+     * Loads all existing discussion from data base
+     * @return list of existing discussion groups from data base
+     */
+    public ArrayList<DiscussionGroup> loadAllGroups() {
+        ArrayList<DiscussionGroup> allGroups = new ArrayList<>();
+        
+        //TODO: load all discussion groups from data base
+        //TODO: load all posts pertaining to the discussion groups and construct a wholesome list of groups
+        
+        return allGroups;
+    }
+    
+    //TODO: probably need another method here for loading disuccion groups
     
     
 }
