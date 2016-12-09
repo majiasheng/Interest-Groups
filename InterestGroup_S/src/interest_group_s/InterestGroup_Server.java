@@ -74,7 +74,7 @@ public class InterestGroup_Server {
                     System.out.println("Client request: " + clientRequest);
 
                     // // handles client's request
-                    response = handleClientRequest(clientRequest);
+                    response = handleClientRequest(clientRequest, connectionSocket);
                     // respond to client request
 
                     // output_to_client.writeObject(response);
@@ -118,7 +118,7 @@ public class InterestGroup_Server {
      *              Format: State, command(as array list), user object
      * and handles the request
      */
-    public static Object handleClientRequest(Object clientRequest) throws IOException {
+    public static Object handleClientRequest(Object clientRequest, Socket connectionSocket) throws IOException {
         ArrayList<Object> clientRequestList = (ArrayList<Object>)clientRequest;
 
         // get state
@@ -165,6 +165,12 @@ public class InterestGroup_Server {
             return null;
         } else if(command.get(0).equals(Constants.LOGOUT)) {
             // first check if the client request is LOGOUT
+            
+            // remove client from list
+            clients.remove(connectionSocket);
+            // close socket
+            connectionSocket.close();
+            
             // if so, may want to update database and detach the thread
             return null;
         } else {
@@ -218,7 +224,6 @@ public class InterestGroup_Server {
                     and create a new entry for this user object in db
                     and return it to the client
         */
-
         if(doesUserExist(id)) {
             System.out.println("returning user " + id);
             return getUserById(id);

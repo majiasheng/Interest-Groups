@@ -1,13 +1,17 @@
 ##### death to .DS_Store ##########
 .DS_Store
 *.class
-/InterestGroup_S/build/
-/InterestGroup_S/manifest.mf
-/InterestGroup_S/build.xml
-InterestGroup_S/nbproject/private/
 
-InterestGroup_C/nbproject/private/
+######## nopes in server #########
+/InterestGroup_S/build/
+/InterestGroup_S/build.xml
+InterestGroup_S/nbproject/
+/InterestGroup_S/manifest.mf
+
+######### nopes in client #########
 /InterestGroup_C/build/
-/InterestGroup_C/manifest.mf
 /InterestGroup_C/build.xml
+InterestGroup_C/nbproject/
+/InterestGroup_C/manifest.mf
+
 

@@ -6,6 +6,7 @@
  */
 import interest_group_c.State;
 import data.Constants;
+import data.DataManager;
 import data.User;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -18,27 +19,39 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * client side 
  */
 public class InterestGroup_Client {
-    static User user;
-    static String state;     // user state in the session
-    static String command;  // user command
-    static Object response; // server response
+    private static DataManager dataManager;
+    private static User user;
+    private static String state;     // user state in the session
+    private static String command;  // user command
+    private static Object response; // server response
+    private static String prompt;
+    
+    private static Socket socket;
+    
+    private static String hostmachine;
+    private static int portnumber;
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         ObjectOutputStream output_to_server;
         ObjectInputStream input_from_server;
-//        Socket socket;
+        // Socket socket;
         Scanner user_input_scn;
         
         // get hostmachine and port number 
-//        String hostmachine = args[1];
-//        int portnumber = Integer.parseInt(args[2]);
+        // hostmachine = args[1];
+        hostmachine = "localhost";
+        
+        // portnumber = Integer.parseInt(args[2]);
+        portnumber = 6666;
         
         // user is not logged in yet 
         state = State.NOT_LOGGED_IN;
@@ -48,7 +61,7 @@ public class InterestGroup_Client {
                 // user input scanner
                 user_input_scn = new Scanner(System.in);
                 // create socket
-                Socket socket = new Socket("localhost", 6666);
+                socket = new Socket(hostmachine, portnumber);
                 System.out.println(">> Connected to localhost at 6666\n");
                 
 //                // create socket with hostmachine and portnumber 
@@ -69,7 +82,7 @@ public class InterestGroup_Client {
                     /*****************************
                         get user command
                     *****************************/
-                    System.out.print(">> ");
+                    printPrompt();
                     command = user_input_scn.nextLine();
 
                     // prints help menu
@@ -107,8 +120,9 @@ public class InterestGroup_Client {
                     /*****************************
                         get response from server
                      *****************************/
+                    // System.out.println(">> Contacting server...");
                     response = input_from_server.readObject();
-                    System.out.println("200 OK ");
+                    // System.out.println("200 OK ");
                     handleServerResponse(response, input_from_server, output_to_server, user_input_scn);
                 } while (true);
 
@@ -146,9 +160,9 @@ public class InterestGroup_Client {
             System.out.println("################################");
             // update current state as "ag"
             state = State.IN_AG_CMD;
-            
+            // updatePrompt();
             do { // listen for user commands 
-                System.out.print(">> ");
+                printPrompt();
                 command = user_input_scn.nextLine();
                 if(command.equals("q")) {
                     System.out.println("################################");
@@ -170,9 +184,9 @@ public class InterestGroup_Client {
             System.out.println("################################");
             // update current state as "sg"
             state = State.IN_SG_CMD;
-            
+            // updatePrompt();
             do { // listen for user commands 
-                System.out.print(">> ");
+                printPrompt();
                 command = user_input_scn.nextLine();
                 if(command.equals("q")) {
                     System.out.println("################################");
@@ -194,9 +208,9 @@ public class InterestGroup_Client {
             System.out.println("################################");
             // update current state as "rg"
             state = State.IN_RG_CMD;
-            
+            updatePrompt();
             do { // listen for user commands 
-                System.out.print(">> ");
+                printPrompt();
                 command = user_input_scn.nextLine();
                 if(command.equals("q")) {
                     System.out.println("################################");
@@ -216,23 +230,20 @@ public class InterestGroup_Client {
                 
             } while(true);
         } else if(cmd.equals(Constants.LOGIN)) {
-            /* TODO: create user, store user info locally if it is a new user
-                                  load user info if it is in the data bases
-            */
-//            state = State.LOGGED_IN;
-////            user = (User)responseTokens.get(0);
-//            
-//            user = (User)response;
-            //DEBUG
-//            System.out.println(user.toString());
-            
+            state = State.LOGGED_IN;
             /*TODO: store user info locally (if user data already exists, 
             overwrite it)*/
+            user = (User)response;
             
-            System.out.println("User " /*+ user.getId() */+ " created" );
+            System.out.println(">>> Logged successfully into server\n" );
         } else if(cmd.equals(Constants.LOGOUT)) {
-            //TODO: close sockets and exit
-            
+            try {
+                //TODO: close sockets and exit
+                socket.close();
+            } catch (IOException ex) {
+                Logger.getLogger(InterestGroup_Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            System.exit(0);
         }
     }
     
@@ -310,6 +321,11 @@ public class InterestGroup_Client {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    /**
+     * Checks each command's usage to validate if the command is valid.
+     * @param command
+     * @return true if valid, false otherwise
+     */
     private static boolean isCMDValid(String command) {
         //TODO: probably need to check if the specify command is valid
         ArrayList<String> cmdTokens = tokenizeCMD(command);
@@ -329,7 +345,38 @@ public class InterestGroup_Client {
         } else {
             return false;
         }
-
+    }
+    
+    private static void updatePrompt() {
+        
+        String name;
+        String mode;
+        /* if user is not in ag, rg, sg mode or their sub mode, then prompt
+           should be of the form: */
+        if(state.equals(State.NOT_LOGGED_IN)) {
+            name = "GUEST";
+            mode = "Main Menu";
+        } else {
+            name = user.getId();
+            if(state.equals(State.LOGGED_IN)) {
+                name = user.getId();
+                mode = "Main Menu";
+            } else if(state.equals(State.IN_AG_CMD)) {
+                mode = "ag";
+            } else if(state.equals(State.IN_SG_CMD)) {
+                mode = "sg";
+            } else {
+                mode = "rg";
+            } 
+        }
+        
+        prompt = mode + ":" + name + "@" + hostmachine + " >> ";
+        
+    }
+    
+    private static void printPrompt() {
+        updatePrompt();
+        System.out.print(prompt);
     }
     
 }
