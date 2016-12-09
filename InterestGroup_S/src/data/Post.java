@@ -15,6 +15,7 @@ public class Post  implements Serializable{
     private String subject;
     private String author;
     private String date;
+    private boolean isRead;
 
     public Post() {
 

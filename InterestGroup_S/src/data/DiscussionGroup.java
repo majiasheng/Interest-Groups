@@ -17,6 +17,7 @@ public class DiscussionGroup  implements Serializable{
 	private String name;
         private String groupName;
 
+        // list of user is probably not needed.. we will think about this later
 	private ArrayList<User> users;
 	private ArrayList<Post> posts;
 

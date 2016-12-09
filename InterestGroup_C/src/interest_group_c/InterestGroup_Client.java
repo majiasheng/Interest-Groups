@@ -226,7 +226,7 @@ public class InterestGroup_Client {
             state = State.LOGGED_IN;
 //            user = (User)responseTokens.get(0);
             
-            user = (User)response;
+//            user = (User)response;
             
             /*TODO: store user info locally (if user data already exists, 
             overwrite it)*/
