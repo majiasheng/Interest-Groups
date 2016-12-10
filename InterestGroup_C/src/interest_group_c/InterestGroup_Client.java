@@ -125,7 +125,6 @@ public class InterestGroup_Client {
                                 output_to_server.writeObject((Object)(formatCMD(command)));
                                 output_to_server.flush();
                             } else {
-                                //TODO: 
                                 continue;
                             }
                         } else {
@@ -200,9 +199,8 @@ public class InterestGroup_Client {
         /*TODO: print all groups N at a time 
                 (if N is not specified, use a default value) */
         
-        
         // update current state as "ag"
-        state = State.IN_AG_CMD;
+        state = State.IN_AG;
         
         do { // listen for user commands 
             printPrompt();
@@ -215,7 +213,7 @@ public class InterestGroup_Client {
                 ag_handler(command);
             } else {
                 System.out.println("ERROR: NO SUCH COMMAND");
-                printSubcmd_AG();
+                printSubCMDMenu_AG();
             }
         } while(true);
     } /* end of ag_mode*/
@@ -228,7 +226,7 @@ public class InterestGroup_Client {
         System.out.println("#       subscribed groups      #");
         System.out.println("################################");
         // update current state as "sg"
-        state = State.IN_SG_CMD;
+        state = State.IN_SG;
         
         do { // listen for user commands 
             printPrompt();
@@ -241,7 +239,7 @@ public class InterestGroup_Client {
                 sg_handler(command);
             } else {
                 System.out.println("ERROR: NO SUCH COMMAND");
-                printSubcmd_SG();
+                printSubCMDMenu_SG();
             }
 
         } while(true);
@@ -255,7 +253,7 @@ public class InterestGroup_Client {
         System.out.println("#          read groups         #");
         System.out.println("################################");
         // update current state as "rg"
-        state = State.IN_RG_CMD;
+        state = State.IN_RG;
         
         updatePrompt();
         do { // listen for user commands 
@@ -272,7 +270,7 @@ public class InterestGroup_Client {
                 rg_handler(command);
             } else {
                 System.out.println("ERROR: NO SUCH COMMAND");
-                printSubcmd_RG();
+                printSubCMDMenu_RG();
             }
 
         } while(true);
@@ -321,29 +319,99 @@ public class InterestGroup_Client {
         System.out.println("<< Logged successfully into server");
     }
     
+    /***********************************************
+                      ag
+     ***********************************************/
     /**
      * Takes "s" "u" or "n" as argument, performs operations pertaining to each command
      * @param command 
      */
     private static void ag_handler(String command) {
-        //TODO:need to decide how to communicate with server
+        //TODO
     }
+    
+    /**
+     * - subscribe to groups
+     */
+    static void s_handler_ag() {}
 
-    private static void printSubcmd_SG() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    /**
+     *	unsubscribe
+     */
+    static void u_handler_ag() {}
 
+    /**
+     *	lists the next N discussion groups
+     */
+    static void n_handler_ag() {}
+    
+    /***********************************************
+                      sg
+     ***********************************************/
     private static void sg_handler(String command) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //TODO
     }
+    /**
+     *	marks a post as read
+     */
+    static void r_handler_sg() {}
 
-    private static void printSubcmd_RG() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+    /**
+     *	lists the next N discussion groups
+     */
+    static void n_handler_sg() {}
+    
+    /***********************************************
+                      rg
+     ***********************************************/
     private static void rg_handler(String command) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //TODO
     }
+    static void rg_handler(String gname, int N) {
+
+
+    }
+
+    static void id_handler_rg() {
+
+    }
+
+    /**
+     * lists the next N posts.
+     * If all posts are displayed, the program exits from the rg command mode
+     */
+    static void n_id_handler_rg(int N) {
+
+    }
+
+    /**
+     * would quit displaying the post content.
+     * The list of posts before opening the post is shown
+     * again with the post just opened marked as read.
+     */
+    static void q_id_handler_rg() {
+        //TODO: probably not needed
+    }
+
+    /**
+     * marks post in range of h to t as read
+     */
+    static void r_handler_rg(int h, int t) {
+
+    }
+
+    /**
+     *	lists the next N discussion groups
+     */
+    static void n_handler_rg() {}
+    
+    /**
+     *	post to the group
+     */
+    static void p_handler_rg() {
+        //TODO: construct a post, send it to server
+    }
+
     
     /**
      * Checks each command's usage to validate if the command is valid.
@@ -386,8 +454,18 @@ public class InterestGroup_Client {
                     return false;
                 }
             }
-        } else if(cmd.equals(Constants.AG)) {
-            
+        } else if(cmd.equals(Constants.AG) || cmd.equals(Constants.SG) || cmd.equals(Constants.RG)) {
+            try {
+                if(Integer.parseInt(cmdTokens.get(1)) > 0) {
+                    return true;
+                } else {
+                    System.out.println("<< Error: Invalid number");
+                    return false;
+                }
+            } catch(NumberFormatException nfe) {
+                System.out.println("<< Error: Invalid number");
+                return false;
+            }
         }
         return true;
     }
@@ -409,9 +487,9 @@ public class InterestGroup_Client {
             if(state.equals(State.LOGGED_IN)) {
                 name = user.getId();
                 mode = "Main Menu";
-            } else if(state.equals(State.IN_AG_CMD)) {
+            } else if(state.equals(State.IN_AG)) {
                 mode = "ag";
-            } else if(state.equals(State.IN_SG_CMD)) {
+            } else if(state.equals(State.IN_SG)) {
                 mode = "sg";
             } else {
                 mode = "rg";
@@ -445,11 +523,19 @@ public class InterestGroup_Client {
         System.out.println("###############################################");
     }
 
-    private static void printSubcmd_AG() {
+    private static void printSubCMDMenu_AG() {
         System.out.println("s HEAD [TAIL] – subscribe to groups in range of HEAD and TAIL (TAIL is optional)\n"
                          + "u HEAD [TAIL] – unsubscribe\n"
                          + "n – lists the next N discussion groups\n" 
                          + "q – exits from the ag command\n");
+    }
+        
+    private static void printSubCMDMenu_SG() {
+        //TODO
+    }
+
+    private static void printSubCMDMenu_RG() {
+        //TODO
     }
 
 }

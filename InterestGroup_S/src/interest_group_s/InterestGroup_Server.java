@@ -7,6 +7,7 @@ import static data.Constants.DEFAULT_PATH;
 import static data.Constants.JSON_EXTENSION;
 import data.DataManager;
 import data.DiscussionGroup;
+import data.Post;
 import data.User;
 import java.io.File;
 import java.io.IOException;
@@ -34,9 +35,10 @@ import java.util.logging.Logger;
 public class InterestGroup_Server {
 
     private static ServerSocket welcomeSocket;  // server socket
-    private static ArrayList<Socket> clients;
-    private static ArrayList<DiscussionGroup> groups;
-    private static HashMap<String, User> ids_users;
+    // private static ArrayList<Socket> clients;
+    // private static ArrayList<DiscussionGroup> groups;
+    private static HashMap<String, DiscussionGroup> gnames_groups_HashMap;
+    private static HashMap<String, User> ids_users_HashMap;
     private static DataManager dataManager;
 
     /*****************************************
@@ -73,17 +75,15 @@ public class InterestGroup_Server {
                     // testing
                     System.out.println("<< Client request: " + clientRequest);
 
-                    // // handles client's request
+                    // handles client's request
                     response = handleClientRequest(clientRequest, connectionSocket);
                     // respond to client request
-
-                    // output_to_client.writeObject(response);
                     output_to_client.writeObject(response);
                 }
             } catch (IOException ex) {
                 // Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println("<< FAILED TO CONNECT TO A CLIENT");
-//                ex.getCause();
+                // ex.getCause();
             } catch (ClassNotFoundException ex) {
                 // Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println("<< ERROR: OBJECT SENT FROM CLIENT CANNOT BE IDENTIFIED");
@@ -104,7 +104,7 @@ public class InterestGroup_Server {
 
                 // add client to the list of clients
                 //TODO: remove it from the list when it logs out
-                clients.add(connectionSocket);
+                // clients.add(connectionSocket);
 
                 // make a worker server for each of the connected clients
                 WorkerServer workerServer = new WorkerServer(connectionSocket);
@@ -137,24 +137,12 @@ public class InterestGroup_Server {
             return(login_handler(command));
 
         } else if(command.get(0).equals(Constants.AG)) {
-            //DEBUG
-            System.out.println("DEBUG: client sent ag");
-            //TODO: return handler's response to client
-            if(command.size() == 2) {
-                ag_handler(Integer.parseInt(command.get(1)));
-            } else {
-                ag_handler();
-            }
-            return null;
+            // return handler's response (i.e. list of all groups) to client
+            return ag_handler();
         } else if(command.get(0).equals(Constants.SG)) {
-            System.out.println("DEBUG: client sent sg");
-            //TODO: return handler's response to client
-            if(command.size() == 2) {
-                sg_handler(Integer.parseInt(command.get(1)));
-            } else {
-                sg_handler();
-            }
-            return null;
+            // return handler's response (i.e. list of all groups) to client
+            return sg_handler();
+            
         } else if(command.get(0).equals(Constants.RG)) {
             System.out.println("DEBUG: client sent rg");
             //TODO: return handler's response to client
@@ -170,7 +158,7 @@ public class InterestGroup_Server {
             // first check if the client request is LOGOUT
             
             // remove client from list
-            clients.remove(connectionSocket);
+            // clients.remove(connectionSocket);
             // close socket
             connectionSocket.close();
             
@@ -181,17 +169,17 @@ public class InterestGroup_Server {
         }
     }
 
-    public static HashMap<String, User> getUsers() {
-        return ids_users;
+    private static void addUser(String id, User user) {
+        ids_users_HashMap.put(id, user);
     }
-
-    public static User getUserById(String id) {
-        return ids_users.get(id);
-
-    }
-
-    public static void addUser(String id, User user) {
-        ids_users.put(id, user);
+    
+    /**
+     * Adds post to discussion group
+     * @param post post to add
+     * @param group discussion group to which the post add
+     */
+    private static void addPostToGroup(Post post, DiscussionGroup group) {
+        //TODO: 
     }
 
     /**
@@ -207,7 +195,7 @@ public class InterestGroup_Server {
      * @return if the user specified by the id exists in data base
      */
     private static boolean doesUserExist(String id) {
-        return ids_users.containsKey(id);
+        return ids_users_HashMap.containsKey(id);
     }
 
     /**
@@ -218,7 +206,6 @@ public class InterestGroup_Server {
      * @return user with corresponding id and data
      */
     static User login_handler(ArrayList<String> command) {
-        // String cmd = command.get(0); // login
         String id = command.get(1); // user id
         /*      if user exits in db
                     return user obj to client
@@ -229,7 +216,7 @@ public class InterestGroup_Server {
         */
         if(doesUserExist(id)) {
             System.out.println("returning user " + id);
-            return getUserById(id);
+            return ids_users_HashMap.get(id);
         } else {
             User newUser = new User(id);
             addUser(id, newUser);
@@ -239,16 +226,13 @@ public class InterestGroup_Server {
         }
     } /* end of login_handler */
 
-    /****************************************
-     ag - Ruoping
-     ****************************************/
     /**
      * ag: lists all existing groups, a default number of groups at a time
      * This method gathers all discussion groups exist in the data base
      *
      * @return set of all groups in data base as a list of string
      */
-    static ArrayList<String> ag_handler() {
+    private static ArrayList<String> ag_handler() {
         // user should have a set of subscribed groups,
         ArrayList<String> allGroups = new ArrayList<>();
         // TODO: get add groups, add each one of their name to the list
@@ -256,138 +240,43 @@ public class InterestGroup_Server {
 
 
         return allGroups;
-
     }
 
     /**
-     * lists N groups at a time
+     * sg
      */
-    static void ag_handler(int N){
+    private static ArrayList<String> sg_handler() {
+    // user should have a set of subscribed groups,
+        ArrayList<String> allGroups = new ArrayList<>();
+        // TODO: get add groups, add each one of their name to the list
+        // on client side, we need to check which group has been subscribed
 
+
+        return allGroups;
     }
-
-    /**
-     * - subscribe to groups
-     */
-    static void s_handler_ag() {}
-
-    /**
-     *	unsubscribe
-     */
-    static void u_handler_ag() {}
-
-    /**
-     *	lists the next N discussion groups
-     */
-    static void n_handler_ag() {}
-
-    /**
-     *	exit from ag command
-     */
-    static void q_handler_ag() {}
-
-    /****************************************
-     sg - Liwen
-     ****************************************/
-    static void sg_handler() {}
-    static void sg_handler(int N) {}
-
-    /**
-     *	marks a post as read
-     */
-    static void r_handler_sg() {}
-
-    /**
-     *	lists the next N discussion groups
-     */
-    static void n_handler_sg() {}
-
-    /**
-     *	post to the group
-     */
-    static void p_handler_sg() {}
-
-    /**
-     *	exit from sg command
-     */
-    static void q_handler_sg() {}
-
-    /****************************************
-     rg - Jia Sheng
-     ****************************************/
-
-
+    
     /**
      * read group
      */
-//	static void rg_handler(String gname) {
-//		/* unread (new) posts should be displayed first*/
-//		DiscussionGroup g;
-//		g = getGroupByName(gname);
-//
-//	}
-    static void rg_handler(String gname) {}
-
-    static void rg_handler(String gname, int N) {
-
-
+    static void rg_handler(String gname) {
+            /* unread (new) posts should be displayed first*/
+            DiscussionGroup g;
+            g = gnames_groups_HashMap.get(gname);
+            //TODO:
     }
-
-    static void id_handler_rg() {
-
-    }
-
-    /**
-     * lists the next N posts.
-     * If all posts are displayed, the program exits from the rg command mode
-     */
-    static void n_id_handler_rg(int N) {
-
-    }
-
-    /**
-     * would quit displaying the post content.
-     * The list of posts before opening the post is shown
-     * again with the post just opened marked as read.
-     */
-    static void q_id_handler_rg() {
-
-    }
-
-    /**
-     * marks post in range of h to t as read
-     */
-    static void r_handler_rg(int h, int t) {
-
-    }
-
-    /**
-     *	lists the next N discussion groups
-     */
-    static void n_handler_rg() {}
-
+    
     /**
      *	post to the group
      */
-    static void p_handler_rg() {}
+    static void p_handler_rg(/*TODO: add client request */) {
+        //TODO: add post to group,call update() in addPostTogroup
+        // addPostToGroup(null, null);
+    }
 
-    /**
-     *	exit from rg command
-     */
-    static void q_handler_rg() {}
-
-    /**
-     * Returns the group specified by gname
-     */
-//	static DiscussionGroup getGroupByName(String gname) {
-//
-//	}
 
     /****************************************
      OTHER FUNCTIONS
      ****************************************/
-
-    static void createUser(String id) {}
 
     /**
      * Initializes necessary components on start of server
@@ -397,24 +286,28 @@ public class InterestGroup_Server {
         dataManager = new DataManager();
         
         // init client(socket) list
-        clients = new ArrayList<>();
+        // clients = new ArrayList<>();
 
+        // init hash map of gnames,groups
+        gnames_groups_HashMap = new HashMap<>();
         // load all groups from data manager
-        groups = dataManager.loadAllGroups();
+        for(DiscussionGroup g : dataManager.loadAllGroups()) {
+            gnames_groups_HashMap.put(g.getGroupName(), g);
+        }
         
-        // init hash map of id,users
-        ids_users = new HashMap<>();
+        // init hash map of ids,users
+        ids_users_HashMap = new HashMap<>();
         // load all ids_users from data manager
         for(User u : dataManager.loadAllUsers()) {
-            ids_users.put(u.getId(), u);
+            ids_users_HashMap.put(u.getId(), u);
         }
 
-        System.out.println("Starting server ...");
+        System.out.println(">> Starting server ...");
         try {
             welcomeSocket = new ServerSocket(6666);
         } catch (IOException ex) {
             Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Listening for clients ...");
+        System.out.println(">> Listening for clients ...");
     }
 }
