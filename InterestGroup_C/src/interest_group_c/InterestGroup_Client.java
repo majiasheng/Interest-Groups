@@ -7,6 +7,7 @@
 import interest_group_c.State;
 import data.Constants;
 import data.DataManager;
+import data.DiscussionGroup;
 import data.User;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -168,13 +169,13 @@ public class InterestGroup_Client {
         String cmd = cmdTokens.get(0);
         
         if(cmd.equals(Constants.AG)) {
-            ag_mode(response);
+            ag_mode();
         } else if(cmd.equals(Constants.SG)) {
             sg_mode();
         } else if(cmd.equals(Constants.RG)) {
             rg_mode();
         } else if(cmd.equals(Constants.LOGIN)) {            
-            handleLoginResponse(response);
+            handleLoginResponse();
         } 
         // else if(cmd.equals(Constants.LOGOUT)) {
         //    try {
@@ -190,7 +191,7 @@ public class InterestGroup_Client {
     /**
      * Enables sub commands available under "ag"
      */
-    private static void ag_mode(Object response) {
+    private static void ag_mode() {
         System.out.println("################################");
         System.out.println("#          all groups          #");
         System.out.println("################################");
@@ -249,6 +250,26 @@ public class InterestGroup_Client {
      * Enables sub commands available under "rg"
      */
     private static void rg_mode() {
+        
+        /* if server returns null, i.e. no such group exist, 
+           then give feedback to user
+        */ 
+        if(response == null) {
+            System.out.println("<< ERROR: Group: \"" + cmdTokens.get(1) 
+                             + "\" NOT FOUND IN RECORD");
+            return;
+        }
+        // now we have a group, we can run queries on it 
+        DiscussionGroup group = (DiscussionGroup)response;
+        
+        // max number of post to be displayed at a time
+        int N;
+        if(cmdTokens.size() > 2) {
+            N = Integer.parseInt(cmdTokens.get(2));
+        } else {
+            N = Constants.N;
+        }
+        
         System.out.println("################################");
         System.out.println("#          read groups         #");
         System.out.println("################################");
@@ -267,12 +288,16 @@ public class InterestGroup_Client {
             //TODO: the subcommand can be a number as an id, if it is a number, 
             // a sub sub command interface should be displayed
             else if(command.equals("r") || command.equals("n") || command.equals("p")) {
-                rg_handler(command);
+                rg_handler(command, N);
             } else {
-                System.out.println("ERROR: NO SUCH COMMAND");
-                printSubCMDMenu_RG();
+                try {
+                    int postid = Integer.parseInt(command);
+                    id_handler_rg(postid, N);
+                } catch(NumberFormatException nfe) {
+                    System.out.println("ERROR: NO SUCH COMMAND");
+                    printSubCMDMenu_RG();
+                }
             }
-
         } while(true);
     } /* end of rg_mode */
     
@@ -310,7 +335,7 @@ public class InterestGroup_Client {
      * 
      * @param response server response - the user object
      */
-    private static void handleLoginResponse(Object response) {
+    private static void handleLoginResponse() {
         state = State.LOGGED_IN;
         /*TODO: store user info locally (if user data already exists, 
         overwrite it)*/
@@ -352,28 +377,40 @@ public class InterestGroup_Client {
         //TODO
     }
     /**
-     *	marks a post as read
+     * marks posts in range of [h,t] as read 
+     * @param h head of range
+     * @param t tail of range
      */
-    static void r_handler_sg() {}
+    static void r_handler_sg(int h, int t) {
+    
+    }
 
     /**
      *	lists the next N discussion groups
      */
-    static void n_handler_sg() {}
+    static void n_handler_sg(int N) {}
     
     /***********************************************
                       rg
      ***********************************************/
-    private static void rg_handler(String command) {
-        //TODO
-    }
-    static void rg_handler(String gname, int N) {
-
-
-    }
-
-    static void id_handler_rg() {
-
+    private static void rg_handler(String command, int N) {
+        //TODO: 
+        if(command.equals("r")){
+            
+        } else if(command.equals("n")) {
+            
+        } else if(command.equals("p")) {
+            /*TODO: 
+                The client program prompts the user for a line denoting the post subject, 
+                and then the content of the post, until some special character sequence, 
+                such as “\n.\n” – a dot by itself on a line, which denotes the end of post, 
+                is entered by the user. The post is then submitted to the server. 
+                Afterwards, a new list of N posts should be displayed, 
+                including the newly submitted post which is shown as unread.
+            */
+            p_handler_rg();
+        }
+        
     }
 
     /**
@@ -389,27 +426,58 @@ public class InterestGroup_Client {
      * The list of posts before opening the post is shown
      * again with the post just opened marked as read.
      */
-    static void q_id_handler_rg() {
-        //TODO: probably not needed
+    private static void id_handler_rg(int postid, int N) {
+        // set state, update prompt 
+        // update current state as "rg"
+        state = State.IN_RG_ID;
+        
+        updatePrompt();
+        do { // listen for user commands 
+            printPrompt();
+            command = user_input_scn.nextLine();
+            if(command.equals("q")) {
+                System.out.println("################################");
+                System.out.println("#          read groups         #");
+                System.out.println("################################");
+                state = State.IN_RG;
+                break;
+            } 
+            else if(command.equals("n")) {
+                //TODO: display at most N more lines of the post content. what is N
+                n_id_handler_rg(N);
+            } else {
+                System.out.println("ERROR: NO SUCH COMMAND");
+                //TODO: print list of available commands: q and n 
+            }
+        } while(true);
+        
     }
+
 
     /**
      * marks post in range of h to t as read
      */
     static void r_handler_rg(int h, int t) {
-
+        /*TODO: for each post in range h to t
+                    readPost()
+        */
+        
+        
     }
 
     /**
      *	lists the next N discussion groups
      */
-    static void n_handler_rg() {}
+    static void n_handler_rg() {
+        //TODO: lists the next N discussion groups
+    }
     
     /**
      *	post to the group
      */
     static void p_handler_rg() {
         //TODO: construct a post, send it to server
+        
     }
 
     
@@ -469,7 +537,6 @@ public class InterestGroup_Client {
         }
         return true;
     }
-  
     
     /**
      * Updates prompt for each command
@@ -484,16 +551,20 @@ public class InterestGroup_Client {
             mode = "Main Menu";
         } else {
             name = user.getId();
-            if(state.equals(State.LOGGED_IN)) {
-                name = user.getId();
-                mode = "Main Menu";
-            } else if(state.equals(State.IN_AG)) {
+            if(state.equals(State.IN_AG)) {
                 mode = "ag";
             } else if(state.equals(State.IN_SG)) {
                 mode = "sg";
-            } else {
+            } else if(state.equals(State.IN_RG)){
                 mode = "rg";
+            } else if(state.equals(State.IN_RG_ID)) {
+                mode = "rg-[id]";
             } 
+            // if(state.equals(State.LOGGED_IN)) {
+            else {
+                name = user.getId();
+                mode = "Main Menu";
+            }
         }        
         prompt = mode + ": " + name + "@" + hostmachine + " >> ";        
     }

@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import static java.lang.ProcessBuilder.Redirect.to;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  *
@@ -105,10 +106,26 @@ public class DataManager implements Serializable{
      * Loads all existing users from data base
      * @return list of existing users from data base
      */
-    public ArrayList<User> loadAllUsers() {
+    public ArrayList<User> loadAllUsers() throws IOException {
         ArrayList<User> allUsers = new ArrayList<>();
         
-        //TODO: load all users from data base
+        // load all users from data base
+        File folder = new File("./src/saved");
+        File[] listOfFiles = folder.listFiles();
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+            String userFileName = "./src/saved/" + listOfFiles[i].getName();
+//            System.out.println("");
+            Path userFilePath = Paths.get(userFileName);
+
+            System.out.println(userFileName);
+            System.out.println(userFilePath.getFileName());
+            JsonFactory jsonFactory = new JsonFactory();
+            JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(userFilePath));
+            User temp = new User();
+            loadUserData(temp,userFilePath);
+            allUsers.add(temp);
+        }
         
         return allUsers;
     }

@@ -11,4 +11,6 @@ public class Constants {
     public static final String DEFAULT_PATH = "src/saved/";     
     public static final String JSON_EXTENSION = ".json";  
     
+    public static final int N = 5;
+    
 }
