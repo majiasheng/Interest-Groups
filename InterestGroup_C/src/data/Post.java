@@ -1,64 +1,98 @@
 package data;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 
 /**
  *
- * @author majiasheng
+ * @author Ruoping Lin
  */
 
 /**
- * 
+ * Manager a post
  */
-public class Post {
-	private String group;
-	private String subject;
-	private String author;
-	private String date;
-        private String content;
+public class Post  implements Serializable{
+    private String groupName;       // Group that the post belongs to
+    private String subject;         // Post's subject
+    private String author;          // Post's author
+    private String content;        
+    private String postedDate;      // Timestamp    
+    private String postID;          // Post is identified by an ID
 
-	public Post() {
-            
-	}
+    /**
+    * If a Post object is created by using the default constructor,
+    * a post ID must be specified by using the setter method
+    */
+    public Post() {
 
-    public String getGroup() {
-        return group;
     }
-
-    public void setGroup(String group) {
-        this.group = group;
+    
+    /**
+     * Every post is assigned a unique ID
+     * @param postID post's ID
+     */
+    public Post(String postID) {
+        this.postID = postID;
     }
-
-    public String getSubject() {
-        return subject;
+    /** 
+     * Group that this post belongs to
+     * @return group
+     */
+    public String getGroupName() {
+        return this.groupName;
     }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setGroup(String groupName) {
+        this.groupName = groupName;
     }
-
-    public String getAuthor() {
-        return author;
+    
+    /**
+     * Retrieves a post by ID
+     * @return 
+     */
+    public String getPostByID() {
+        return this.postID;
     }
-
-    public void setAuthor(String author) {
+    public void setPostID(String postID) {
+        this.postID = postID;
+    }
+    
+    /**
+     * Gets post's author
+     * @return 
+     */
+    public String getPostAuthor() {
+        return this.author;
+    }
+    public void setPostAuthor(String author) {
         this.author = author;
     }
-
-    public String getDate() {
-        return date;
+    
+    /**
+     * 
+     * @return 
+     */
+    public String getPostContent() {
+        return this.content;
     }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
+    
+    /**
+     * Writes content of a post
+     * For subcommand rgp (post to group) of rg (read group)
+     * @param content 
+     */
+    public void setPostContent(String content) {
         this.content = content;
     }
+    
+    /**
+     * When the post is created
+     * @return a string representation of posted date
+     */
+    public String getPostedDate() {
+        return this.postedDate;
+    }
+    public void setPostedDate(String date) {
+        this.postedDate = date;
+    }
+    
 
 }
