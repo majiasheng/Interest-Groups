@@ -27,24 +27,26 @@ import java.util.logging.Logger;
  */
 public class InterestGroup_Client {
     private static DataManager dataManager;
-    private static User user;
     private static String state;     // user state in the session
-    private static String command;  // user command
-    private static Object response; // server response
     private static String prompt;
     
+    private static String command;  // user command
+    private static ArrayList<String> cmdTokens;
+    private static Object response; // server response
+    
     private static Socket socket;
+    private static ObjectOutputStream output_to_server;
+    private static ObjectInputStream input_from_server;
     
     private static String hostmachine;
     private static int portnumber;
+    private static User user;
+    private static Scanner user_input_scn;
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        ObjectOutputStream output_to_server;
-        ObjectInputStream input_from_server;
-        // Socket socket;
-        Scanner user_input_scn;
         
         // get hostmachine and port number 
         // hostmachine = args[1];
@@ -64,16 +66,15 @@ public class InterestGroup_Client {
                 socket = new Socket(hostmachine, portnumber);
                 System.out.println(">> Connected to localhost at 6666\n");
                 
-//                // create socket with hostmachine and portnumber 
-//                Socket socket = new Socket(hostmachine, portnumber);
-//                // feedback: connected to hostmachine 
-//                System.out.println(">> Connected to " + hostmachine + "\n");
+                // create socket with hostmachine and portnumber 
+                // Socket socket = new Socket(hostmachine, portnumber);
+                // feedback: connected to hostmachine 
+                // System.out.println(">> Connected to " + hostmachine + "\n");
 
                 // output buffer (to server)
                 output_to_server = new ObjectOutputStream(socket.getOutputStream());
                 // input buffer (from server)
                 input_from_server = new ObjectInputStream(socket.getInputStream());
-                
                 
                 /*****************************
                     listen for user command 
@@ -84,11 +85,18 @@ public class InterestGroup_Client {
                     *****************************/
                     printPrompt();
                     command = user_input_scn.nextLine();
-
+                    // tokenize command
+                    cmdTokens = tokenizeCMD(command);
+                    
                     // prints help menu
                     if(command.equals(Constants.HELP)) {
                         printHelpMenu();
                         continue;
+                    }
+                    if(command.equals(Constants.LOGOUT)) {
+                        System.out.println("Logging out ...");
+                        socket.close();
+                        System.exit(0);
                     }
                     /*****************************
                         send server command 
@@ -96,21 +104,30 @@ public class InterestGroup_Client {
                             but if it is not logged in, just send the command
                     *****************************/                        
                     if(state.equals(State.NOT_LOGGED_IN)) {
-                        // tokenize command and check the first token 
-                        String cmdTokens = tokenizeCMD(command).get(0);
-                        if(!cmdTokens.equals(Constants.LOGIN)){
+                        
+                        if(!cmdTokens.get(0).equals(Constants.LOGIN)){
                             // feedback: not logged in
                             System.out.println(">> Please log in first\n");
                             continue;
                         } else {
                             // send login command to server
-                            output_to_server.writeObject((Object)(formatCMD(command)));
-                            output_to_server.flush();
+                            if(validateCMD()) {
+                                output_to_server.writeObject((Object)(formatCMD(command)));
+                                output_to_server.flush();
+                            } else {
+                                continue;
+                            }
                         }
                     } else {
                         if(isCMDValid(command)) {
-                            output_to_server.writeObject((Object)(formatCMD(command)));
-                            output_to_server.flush();
+                            // further validates command (check illegal arguments)
+                            if(validateCMD()) {
+                                output_to_server.writeObject((Object)(formatCMD(command)));
+                                output_to_server.flush();
+                            } else {
+                                //TODO: 
+                                continue;
+                            }
                         } else {
                             System.out.println(">> No such command. Type \"help\" to see available commands");
                             continue;
@@ -123,27 +140,24 @@ public class InterestGroup_Client {
                     // System.out.println(">> Contacting server...");
                     response = input_from_server.readObject();
                     // System.out.println("200 OK ");
-                    handleServerResponse(response, input_from_server, output_to_server, user_input_scn);
+                    handleServerResponse(response);
+                    
                 } while (true);
 
             } catch(IOException ioe) {
-                System.out.println("FAILED TO CONNECT TO HOST");
-            } 
-            catch(ClassNotFoundException cnf) {
+                System.out.println("<< FAILED TO CONNECT TO HOST");
+            } catch(ClassNotFoundException cnf) {
                 cnf.printStackTrace();
             }
-
     }
     
     /**
      * Handles server's response
      * @param response
      * @param input_from_server
-     * @param output_to_server
-     * @param user_input_scn 
+     * @param output_to_server 
      */
-    public static void handleServerResponse(Object response, ObjectInputStream input_from_server, 
-                                            ObjectOutputStream output_to_server, Scanner user_input_scn) {
+    public static void handleServerResponse(Object response) {
         
         /* server response is just an object depending one what 
            request the client sent to the server 
@@ -152,100 +166,117 @@ public class InterestGroup_Client {
            3. //TODO: 
         */
         
-        String cmd = tokenizeCMD(command).get(0);
+        String cmd = cmdTokens.get(0);
         
         if(cmd.equals(Constants.AG)) {
-            System.out.println("################################");
-            System.out.println("#          all groups          #");
-            System.out.println("################################");
-            // update current state as "ag"
-            state = State.IN_AG_CMD;
-            // updatePrompt();
-            do { // listen for user commands 
-                printPrompt();
-                command = user_input_scn.nextLine();
-                if(command.equals("q")) {
-                    System.out.println("################################");
-                    System.out.println("#          main menu           #");
-                    System.out.println("################################");
-                    state = State.LOGGED_IN;
-                    break;
-                } else if(command.equals("s") || command.equals("u") || command.equals("n")) {
-                    ag_handler(command);
-                } else {
-                    System.out.println("ERROR: NO SUCH COMMAND");
-                    printSubcmd_AG();
-                }
-            } while(true);
-            
+            ag_mode(response);
         } else if(cmd.equals(Constants.SG)) {
-            System.out.println("################################");
-            System.out.println("#       subscribed groups      #");
-            System.out.println("################################");
-            // update current state as "sg"
-            state = State.IN_SG_CMD;
-            // updatePrompt();
-            do { // listen for user commands 
-                printPrompt();
-                command = user_input_scn.nextLine();
-                if(command.equals("q")) {
-                    System.out.println("################################");
-                    System.out.println("#          main menu           #");
-                    System.out.println("################################");
-                    state = State.LOGGED_IN;
-                    break;
-                } else if(command.equals("u") || command.equals("n")) {
-                    sg_handler(command);
-                } else {
-                    System.out.println("ERROR: NO SUCH COMMAND");
-                    printSubcmd_SG();
-                }
-                
-            } while(true);
+            sg_mode();
         } else if(cmd.equals(Constants.RG)) {
-            System.out.println("################################");
-            System.out.println("#          read groups         #");
-            System.out.println("################################");
-            // update current state as "rg"
-            state = State.IN_RG_CMD;
-            updatePrompt();
-            do { // listen for user commands 
-                printPrompt();
-                command = user_input_scn.nextLine();
-                if(command.equals("q")) {
-                    System.out.println("################################");
-                    System.out.println("#          main menu           #");
-                    System.out.println("################################");
-                    state = State.LOGGED_IN;
-                    break;
-                } 
-                //TODO: the subcommand can be a number as an id, if it is a number, 
-                // a sub sub command interface should be displayed
-                else if(command.equals("r") || command.equals("n") || command.equals("p")) {
-                    rg_handler(command);
-                } else {
-                    System.out.println("ERROR: NO SUCH COMMAND");
-                    printSubcmd_RG();
-                }
-                
-            } while(true);
-        } else if(cmd.equals(Constants.LOGIN)) {
-            state = State.LOGGED_IN;
-            /*TODO: store user info locally (if user data already exists, 
-            overwrite it)*/
-            user = (User)response;
-            
-            System.out.println(">>> Logged successfully into server\n" );
-        } else if(cmd.equals(Constants.LOGOUT)) {
-            try {
-                //TODO: close sockets and exit
-                socket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(InterestGroup_Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            System.exit(0);
-        }
+            rg_mode();
+        } else if(cmd.equals(Constants.LOGIN)) {            
+            handleLoginResponse(response);
+        } 
+        // else if(cmd.equals(Constants.LOGOUT)) {
+        //    try {
+                // close sockets and exit
+        //        socket.close();
+        //    } catch (IOException ex) {
+        //        Logger.getLogger(InterestGroup_Client.class.getName()).log(Level.SEVERE, null, ex);
+        //    }
+        //    System.exit(0);
+        // }
     }
+    
+    /**
+     * Enables sub commands available under "ag"
+     */
+    private static void ag_mode(Object response) {
+        System.out.println("################################");
+        System.out.println("#          all groups          #");
+        System.out.println("################################");
+        
+        ArrayList<String> allGroups = (ArrayList<String>)response;
+        /*TODO: print all groups N at a time 
+                (if N is not specified, use a default value) */
+        
+        
+        // update current state as "ag"
+        state = State.IN_AG_CMD;
+        
+        do { // listen for user commands 
+            printPrompt();
+            command = user_input_scn.nextLine();
+            if(command.equals("q")) {
+                state = State.LOGGED_IN;
+                printMainMenuHeader();
+                break;
+            } else if(command.equals("s") || command.equals("u") || command.equals("n")) {
+                ag_handler(command);
+            } else {
+                System.out.println("ERROR: NO SUCH COMMAND");
+                printSubcmd_AG();
+            }
+        } while(true);
+    } /* end of ag_mode*/
+    
+    /**
+     * Enables sub commands available under "sg"
+     */
+    private static void sg_mode() {
+        System.out.println("################################");
+        System.out.println("#       subscribed groups      #");
+        System.out.println("################################");
+        // update current state as "sg"
+        state = State.IN_SG_CMD;
+        
+        do { // listen for user commands 
+            printPrompt();
+            command = user_input_scn.nextLine();
+            if(command.equals("q")) {
+                printMainMenuHeader();
+                state = State.LOGGED_IN;
+                break;
+            } else if(command.equals("u") || command.equals("n")) {
+                sg_handler(command);
+            } else {
+                System.out.println("ERROR: NO SUCH COMMAND");
+                printSubcmd_SG();
+            }
+
+        } while(true);
+    } /* end of sg_mode */
+    
+    /**
+     * Enables sub commands available under "rg"
+     */
+    private static void rg_mode() {
+        System.out.println("################################");
+        System.out.println("#          read groups         #");
+        System.out.println("################################");
+        // update current state as "rg"
+        state = State.IN_RG_CMD;
+        
+        updatePrompt();
+        do { // listen for user commands 
+            printPrompt();
+            command = user_input_scn.nextLine();
+            if(command.equals("q")) {
+                printMainMenuHeader();
+                state = State.LOGGED_IN;
+                break;
+            } 
+            //TODO: the subcommand can be a number as an id, if it is a number, 
+            // a sub sub command interface should be displayed
+            else if(command.equals("r") || command.equals("n") || command.equals("p")) {
+                rg_handler(command);
+            } else {
+                System.out.println("ERROR: NO SUCH COMMAND");
+                printSubcmd_RG();
+            }
+
+        } while(true);
+    } /* end of rg_mode */
     
     /**
      * Tokenizes command 
@@ -263,6 +294,8 @@ public class InterestGroup_Client {
     /**
      * Formats command to include all info needed by server 
      * Format: State, command(as array list), user object
+     * @param command
+     * @return a formatted client request
      */
     public static ArrayList<Object> formatCMD(String command) {
         ArrayList<Object> formattedCMD = new ArrayList<>();
@@ -273,36 +306,27 @@ public class InterestGroup_Client {
         formattedCMD.add(user);
         
         return formattedCMD;
-        
     }
 
     /**
-     * Prints help menu
+     * 
+     * @param response server response - the user object
      */
-    public static void printHelpMenu() {
-        // TODO: format help menu, add sub commands
-        System.out.println("###############################################");
-        System.out.println("# help                print this menu         #");
-        System.out.println("# login USERID        log in with user id     #");
-        System.out.println("# ag                  show all groups         #");
-        System.out.println("# sg                  show subscribed groups  #");
-        System.out.println("# rg                  read groups             #");
-        System.out.println("###############################################");
+    private static void handleLoginResponse(Object response) {
+        state = State.LOGGED_IN;
+        /*TODO: store user info locally (if user data already exists, 
+        overwrite it)*/
+        user = (User)response;
 
+        System.out.println("<< Logged successfully into server");
     }
-
-    private static void printSubcmd_AG() {
-        System.out.println("s HEAD [TAIL] – subscribe to groups in range of HEAD and TAIL (TAIL is optional)\n"
-                         + "u HEAD [TAIL] – unsubscribe\n"
-                         + "n – lists the next N discussion groups\n" 
-                         + "q – exits from the ag command\n");
-    }
+    
     /**
      * Takes "s" "u" or "n" as argument, performs operations pertaining to each command
      * @param command 
      */
     private static void ag_handler(String command) {
-        //TODO:
+        //TODO:need to decide how to communicate with server
     }
 
     private static void printSubcmd_SG() {
@@ -327,28 +351,52 @@ public class InterestGroup_Client {
      * @return true if valid, false otherwise
      */
     private static boolean isCMDValid(String command) {
-        //TODO: probably need to check if the specify command is valid
-        ArrayList<String> cmdTokens = tokenizeCMD(command);
+        
         String cmd = cmdTokens.get(0);
         if((cmd.equals(Constants.AG)) || (cmd.equals(Constants.SG))
         || (cmd.equals(Constants.RG)) || (cmd.equals(Constants.HELP))
-        || (cmd.equals(Constants.LOGOUT)) ) {
+        || (cmd.equals(Constants.LOGOUT) || cmd.equals(Constants.LOGIN)) ) {
             return true;
-        } else if(cmd.equals(Constants.LOGIN)) {
-            //TODO:
-            if(cmdTokens.size() != 2 /*|| cmdTokens.get(1)*/) {
-                // if the second argument is not valid digits in 0 - 999999999, return  false 
-                return false;
-            } else {
-                return true;
-            }
         } else {
             return false;
         }
     }
     
+    /**
+     * Further validates command (check illegal arguments)
+     * @param command
+     * @return 
+     */
+    private static boolean validateCMD() {
+        String cmd = cmdTokens.get(0);
+        if(cmd.equals(Constants.LOGIN)) {
+            if(state.equals(State.LOGGED_IN)) {
+                System.out.println("<< Error: Already logged in with user: " + user.getId());
+                return false;
+            } else if(cmdTokens.get(1).length() > 9) {
+                // if the second argument is not in 0 - 999999999, return  false 
+                System.out.println("<< Error: Invalid ID");
+                return false;
+            } else { // if the id argument is not valid digits, return false
+                try {
+                    Integer.parseInt(cmdTokens.get(1));
+                    return true;
+                } catch(NumberFormatException nfe) {
+                    System.out.println("<< Error: Invalid ID");
+                    return false;
+                }
+            }
+        } else if(cmd.equals(Constants.AG)) {
+            
+        }
+        return true;
+    }
+  
+    
+    /**
+     * Updates prompt for each command
+     */
     private static void updatePrompt() {
-        
         String name;
         String mode;
         /* if user is not in ag, rg, sg mode or their sub mode, then prompt
@@ -368,10 +416,8 @@ public class InterestGroup_Client {
             } else {
                 mode = "rg";
             } 
-        }
-        
-        prompt = mode + ":" + name + "@" + hostmachine + " >> ";
-        
+        }        
+        prompt = mode + ": " + name + "@" + hostmachine + " >> ";        
     }
     
     private static void printPrompt() {
@@ -379,4 +425,31 @@ public class InterestGroup_Client {
         System.out.print(prompt);
     }
     
+    private static void printMainMenuHeader() {
+        System.out.println("################################");
+        System.out.println("#          main menu           #");
+        System.out.println("################################");
+    }    
+    
+    /**
+     * Prints help menu
+     */
+    public static void printHelpMenu() {
+        // TODO: format help menu, add sub commands
+        System.out.println("###############################################");
+        System.out.println("# help                print this menu         #");
+        System.out.println("# login USERID        log in with user id     #");
+        System.out.println("# ag                  show all groups         #");
+        System.out.println("# sg                  show subscribed groups  #");
+        System.out.println("# rg                  read groups             #");
+        System.out.println("###############################################");
+    }
+
+    private static void printSubcmd_AG() {
+        System.out.println("s HEAD [TAIL] – subscribe to groups in range of HEAD and TAIL (TAIL is optional)\n"
+                         + "u HEAD [TAIL] – unsubscribe\n"
+                         + "n – lists the next N discussion groups\n" 
+                         + "q – exits from the ag command\n");
+    }
+
 }

@@ -71,7 +71,7 @@ public class InterestGroup_Server {
                     ************************************/
                     clientRequest = input_from_client.readObject();
                     // testing
-                    System.out.println("Client request: " + clientRequest);
+                    System.out.println("<< Client request: " + clientRequest);
 
                     // // handles client's request
                     response = handleClientRequest(clientRequest, connectionSocket);
@@ -81,9 +81,12 @@ public class InterestGroup_Server {
                     output_to_client.writeObject(response);
                 }
             } catch (IOException ex) {
-                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+                // Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("<< FAILED TO CONNECT TO A CLIENT");
+//                ex.getCause();
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+                // Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("<< ERROR: OBJECT SENT FROM CLIENT CANNOT BE IDENTIFIED");
             }
         }
     } /* end of worker server */
@@ -97,7 +100,7 @@ public class InterestGroup_Server {
             try {
                 // create connection socket for every client connected
                 Socket connectionSocket = welcomeSocket.accept();
-                System.out.println(">> New client from " + connectionSocket.toString());
+                System.out.println("<< New client from " + connectionSocket.toString());
 
                 // add client to the list of clients
                 //TODO: remove it from the list when it logs out
@@ -108,7 +111,7 @@ public class InterestGroup_Server {
                 workerServer.start();
 
             } catch(Exception e) {
-                System.out.println("ERROR IN RECEIVING CLIENT CONNECTION");
+                System.out.println("<< ERROR IN RECEIVING CLIENT CONNECTION");
             }
         }
     }
