@@ -286,16 +286,16 @@ public class InterestGroup_Server {
         // init hash map of gnames,groups
         gnames_groups_HashMap = new HashMap<>();
         // load all groups from data manager
-        for(DiscussionGroup g : dataManager.loadAllGroups()) {
+        for(DiscussionGroup g : dataManager.loadDiscussionGroups()) {
             gnames_groups_HashMap.put(g.getGroupName(), g);
         }
         
         // init hash map of ids,users
         ids_users_HashMap = new HashMap<>();
-//        // load all ids_users from data manager
-//        for(User u : dataManager.loadAllUsers()) {
-//            ids_users_HashMap.put(u.getId(), u);
-//        }
+        // load all ids_users from data manager
+        for(User u : dataManager.loadAllUsers()) {
+            ids_users_HashMap.put(u.getId(), u);
+        }
 
         System.out.println(">> Starting server ...");
         try {
