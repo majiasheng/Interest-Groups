@@ -173,11 +173,10 @@ public class DataManager implements Serializable{
 
         for (int i = 0; i < listOfFiles.length; i++) {
             String userFileName = "./src/saved/" + listOfFiles[i].getName();
-//            System.out.println("");
             Path userFilePath = Paths.get(userFileName);
 
-            System.out.println(userFileName);
-            System.out.println(userFilePath.getFileName());
+            // System.out.println(userFileName);
+            // System.out.println(userFilePath.getFileName());
             JsonFactory jsonFactory = new JsonFactory();
             JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(userFilePath));
             User temp = new User();

@@ -95,6 +95,7 @@ public class InterestGroup_Client {
                         continue;
                     }
                     if(command.equals(Constants.LOGOUT)) {
+                        //TODO: notify server so that server can close the socket 
                         System.out.println("Logging out ...");
                         socket.close();
                         System.exit(0);
@@ -206,12 +207,19 @@ public class InterestGroup_Client {
         do { // listen for user commands 
             printPrompt();
             command = user_input_scn.nextLine();
-            if(command.equals("q")) {
+            cmdTokens = tokenizeCMD(command);
+            String cmd = cmdTokens.get(0);
+            
+            if(cmd.equals("q")) {
                 state = State.LOGGED_IN;
                 printMainMenuHeader();
                 break;
-            } else if(command.equals("s") || command.equals("u") || command.equals("n")) {
-                ag_handler(command);
+            } else if(cmd.equals("s") || cmd.equals("u") || cmd.equals("n")) {
+                if(validateSubCMD()) {
+                    ag_handler(cmd);
+                } else {
+                    //TODO:
+                }
             } else {
                 System.out.println("ERROR: NO SUCH COMMAND");
                 printSubCMDMenu_AG();
@@ -232,12 +240,19 @@ public class InterestGroup_Client {
         do { // listen for user commands 
             printPrompt();
             command = user_input_scn.nextLine();
-            if(command.equals("q")) {
+            cmdTokens = tokenizeCMD(command);
+            String cmd = cmdTokens.get(0);
+            
+            if(cmd.equals("q")) {
                 printMainMenuHeader();
                 state = State.LOGGED_IN;
                 break;
-            } else if(command.equals("u") || command.equals("n")) {
-                sg_handler(command);
+            } else if(cmd.equals("u") || cmd.equals("n")) {
+                if(validateSubCMD()) {
+                    sg_handler(cmd);
+                } else {
+                    //TODO: print usage 
+                }
             } else {
                 System.out.println("ERROR: NO SUCH COMMAND");
                 printSubCMDMenu_SG();
@@ -280,18 +295,26 @@ public class InterestGroup_Client {
         do { // listen for user commands 
             printPrompt();
             command = user_input_scn.nextLine();
-            if(command.equals("q")) {
+            cmdTokens = tokenizeCMD(command);
+            String cmd = cmdTokens.get(0);
+            
+            if(cmd.equals("q")) {
                 printMainMenuHeader();
                 state = State.LOGGED_IN;
                 break;
             } 
             //TODO: the subcommand can be a number as an id, if it is a number, 
             // a sub sub command interface should be displayed
-            else if(command.equals("r") || command.equals("n") || command.equals("p")) {
-                rg_handler(command, N);
+            else if(cmd.equals("r") || cmd.equals("n") || cmd.equals("p")) {
+                if(validateSubCMD()) {
+                    rg_handler(cmd, N);
+                } else {
+                    //TODO:
+                }
             } else {
                 try {
-                    int postid = Integer.parseInt(command);
+                    int postid = Integer.parseInt(cmd);
+                    //TODO: print id sub sub command header 
                     id_handler_rg(postid, N);
                 } catch(NumberFormatException nfe) {
                     System.out.println("ERROR: NO SUCH COMMAND");
@@ -307,11 +330,11 @@ public class InterestGroup_Client {
      * @return tokens
      */
     public static ArrayList<String> tokenizeCMD(String command) {
-        ArrayList<String> cmdTokens = new ArrayList<>();
+        ArrayList<String> tokens = new ArrayList<>();
         for(String token : command.split(" ")) {
-            cmdTokens.add(token);
+            tokens.add(token);
         }
-        return cmdTokens;
+        return tokens;
     }
     
     /**
@@ -349,9 +372,9 @@ public class InterestGroup_Client {
      ***********************************************/
     /**
      * Takes "s" "u" or "n" as argument, performs operations pertaining to each command
-     * @param command 
+     * @param subCMD 
      */
-    private static void ag_handler(String command) {
+    private static void ag_handler(String subCMD) {
         //TODO
     }
     
@@ -374,7 +397,7 @@ public class InterestGroup_Client {
                       sg
      ***********************************************/
     private static void sg_handler(String command) {
-        //TODO
+        //TODO:
     }
     /**
      * marks posts in range of [h,t] as read 
@@ -388,7 +411,9 @@ public class InterestGroup_Client {
     /**
      *	lists the next N discussion groups
      */
-    static void n_handler_sg(int N) {}
+    static void n_handler_sg(int N) {
+        //TODO:
+    }
     
     /***********************************************
                       rg
@@ -396,8 +421,13 @@ public class InterestGroup_Client {
     private static void rg_handler(String command, int N) {
         //TODO: 
         if(command.equals("r")){
+            // TODO: use cmdTokens to get h and t for 
+            // lizi tong xue you need to parse the 
+            // r_handler_rg(h, t);
             
         } else if(command.equals("n")) {
+            //TODO: 
+            n_handler_rg(N);
             
         } else if(command.equals("p")) {
             /*TODO: 
@@ -418,7 +448,7 @@ public class InterestGroup_Client {
      * If all posts are displayed, the program exits from the rg command mode
      */
     static void n_id_handler_rg(int N) {
-
+        //TODO:
     }
 
     /**
@@ -443,11 +473,12 @@ public class InterestGroup_Client {
                 break;
             } 
             else if(command.equals("n")) {
-                //TODO: display at most N more lines of the post content. what is N
+                // display at most N more lines of the post content
                 n_id_handler_rg(N);
             } else {
                 System.out.println("ERROR: NO SUCH COMMAND");
-                //TODO: print list of available commands: q and n 
+                // print list of available commands: q and n 
+                printSubCMDMenu_RG_ID();
             }
         } while(true);
         
@@ -458,7 +489,11 @@ public class InterestGroup_Client {
      * marks post in range of h to t as read
      */
     static void r_handler_rg(int h, int t) {
-        /*TODO: for each post in range h to t
+        /*TODO: check range, the commands that trigger this method 
+                can be of the form "r NUMBER", or "r NUMBER-NUMBER"
+                
+        
+                for each post in range h to t
                     readPost()
         */
         
@@ -468,7 +503,7 @@ public class InterestGroup_Client {
     /**
      *	lists the next N discussion groups
      */
-    static void n_handler_rg() {
+    static void n_handler_rg(int N) {
         //TODO: lists the next N discussion groups
     }
     
@@ -500,7 +535,6 @@ public class InterestGroup_Client {
     
     /**
      * Further validates command (check illegal arguments)
-     * @param command
      * @return 
      */
     private static boolean validateCMD() {
@@ -522,20 +556,123 @@ public class InterestGroup_Client {
                     return false;
                 }
             }
-        } else if(cmd.equals(Constants.AG) || cmd.equals(Constants.SG) || cmd.equals(Constants.RG)) {
-            try {
-                if(Integer.parseInt(cmdTokens.get(1)) > 0) {
-                    return true;
-                } else {
+        } else if(cmd.equals(Constants.AG) || cmd.equals(Constants.SG)) {
+            if(cmdTokens.size() > 1) {
+                try {
+                    if(Integer.parseInt(cmdTokens.get(1)) > 0) {
+                        return true;
+                    } else {
+                        System.out.println("<< Error: Invalid number");
+                        return false;
+                    }
+                } catch(NumberFormatException nfe) {
                     System.out.println("<< Error: Invalid number");
                     return false;
                 }
-            } catch(NumberFormatException nfe) {
-                System.out.println("<< Error: Invalid number");
+            } else {
+                return true;
+            }
+        } else if(cmd.equals(Constants.RG)) {
+            if(cmdTokens.size() > 1) {
+                if(cmdTokens.size() > 2) { //meaning if there is a supposed number argument
+                    try {
+                        if(Integer.parseInt(cmdTokens.get(2)) > 0) {
+                            return true;
+                        } else {
+                            System.out.println("<< Error: Invalid number");
+                            return false;
+                        }
+                    } catch(NumberFormatException nfe) {
+                        System.out.println("<< Error: Invalid number");
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+            } else {
+                System.out.println("Usage: rg gname [N]");
                 return false;
             }
+        } else {
+            return false;
         }
-        return true;
+        
+    }
+    
+    /**
+     * Validates sub commands
+     * @return 
+     */
+    private static boolean validateSubCMD() {
+        String cmd = cmdTokens.get(0);
+        if(((cmd.equals("s") || cmd.equals("u")) && state.equals(State.IN_AG))
+          || (cmd.equals("u") && state.equals(State.IN_SG))) {
+            // the "s" sub command has 1 or more arguments
+            if(cmdTokens.size() == 1) {
+                if(cmd.equals("s"))
+                    System.out.println("Usage: s HEAD [TAIL]");
+                else
+                    System.out.println("Usage: u HEAD [TAIL]");
+                return false;
+            } else {
+                boolean isValid = true;
+                for(int i = 1; i < cmdTokens.size(); i++) {
+                    try {
+                        if(Integer.parseInt(cmdTokens.get(i)) > 0) {
+                            
+                        } else {
+                            System.out.println("<< Error: \"" + cmdTokens.get(i) + "\" is not a valid number");
+                            isValid = false;
+                            break;
+                        }
+                    } catch(NumberFormatException nfe) {
+                        System.out.println("<< Error: \"" + cmdTokens.get(i) + "\" is not a valid number");
+                        isValid = false;
+                        break;
+                    }
+                }
+                return isValid;
+            }
+        } else if((cmd.equals("r") && state.equals(State.IN_RG))) {
+            /* r can have a single number as argument 
+               or a number range in the form of NUM-NUM
+            */
+            if(cmdTokens.size() == 1) {
+                return false;
+            } else {
+                try {
+                    if(Integer.parseInt(cmdTokens.get(1)) > 0) {
+                        return true;
+                    } else {    
+                        System.out.println("<< Error: Invalid number");
+                        return false;
+                    }
+                } catch(NumberFormatException nfe) {
+                    // check range 
+                    // split cmd on "-", check left and right
+                    
+                    ArrayList<String> numberRage = new ArrayList<>();
+                    for(String token : command.split("-")) {
+                        numberRage.add(token);
+                    }
+                    
+                    try {
+                        if(Integer.parseInt(numberRage.get(0)) > 0 && Integer.parseInt(numberRage.get(1)) > 0) {
+                            return true;
+                        } else {
+                            System.out.println("<< Error: Invalid number(s)");
+                            return false;
+                        }
+                    } catch(NumberFormatException e) {
+                        System.out.println("<< Error: Invalid number(s)");
+                        return false;
+                    }
+                }
+            }
+        } else {
+            /* should never be able to get to here */
+            return false;
+        }
     }
     
     /**
@@ -586,27 +723,51 @@ public class InterestGroup_Client {
     public static void printHelpMenu() {
         // TODO: format help menu, add sub commands
         System.out.println("###############################################");
+        System.out.println("############### HELP MENU #####################");
+        System.out.println("###############################################");
         System.out.println("# help                print this menu         #");
         System.out.println("# login USERID        log in with user id     #");
-        System.out.println("# ag                  show all groups         #");
-        System.out.println("# sg                  show subscribed groups  #");
-        System.out.println("# rg                  read groups             #");
+        System.out.println("# ag [N]              show all groups         #");
+        System.out.println("# sg [N]              show subscribed groups  #");
+        System.out.println("# rg gname [N]        read groups             #");
+        System.out.println("# logout         log out and exit the program #");
         System.out.println("###############################################");
     }
 
+    /**
+     * Prints ag's sub commands' menu
+     */
     private static void printSubCMDMenu_AG() {
         System.out.println("s HEAD [TAIL] – subscribe to groups in range of HEAD and TAIL (TAIL is optional)\n"
                          + "u HEAD [TAIL] – unsubscribe\n"
-                         + "n – lists the next N discussion groups\n" 
-                         + "q – exits from the ag command\n");
+                         + "n             – lists the next N discussion groups\n" 
+                         + "q             – exits from the ag command\n");
     }
-        
+    
+    /**
+     * Prints sg's sub commands' menu
+     */
     private static void printSubCMDMenu_SG() {
-        //TODO
+        System.out.println("u HEAD [TAIL] – unsubscribe\n"
+                         + "n             – lists the next N discussion groups\n" 
+                         + "q             – exits from the ag command\n");
     }
 
+    /**
+     * Prints rg's sub commands' menu
+     */
     private static void printSubCMDMenu_RG() {
-        //TODO
+        System.out.println("[id]          - display the post denoted by id\n" 
+                         + "u HEAD [TAIL] – unsubscribe\n"
+                         + "n             – lists the next N discussion groups\n" 
+                         + "q             – exits from the ag command\n");
+    }
+        /**
+     * Prints sg's sub commands' menu
+     */
+    private static void printSubCMDMenu_RG_ID() {
+        System.out.println("n             – lists the next N discussion groups\n" 
+                         + "q             – exits from the ag command\n");
     }
 
 }

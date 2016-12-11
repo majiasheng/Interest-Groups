@@ -81,7 +81,7 @@ public class InterestGroup_Server {
                     output_to_client.writeObject(response);
                 }
             } catch (IOException ex) {
-                 Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
+                // Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println("<< FAILED TO CONNECT TO A CLIENT");
                 // ex.getCause();
             } catch (ClassNotFoundException ex) {
@@ -209,7 +209,7 @@ public class InterestGroup_Server {
                     and return it to the client
         */
         if(doesUserExist(id)) {
-            System.out.println("returning user " + id);
+            System.out.println("Returning user " + id);
             return ids_users_HashMap.get(id);
         } else {
             User newUser = new User(id);
