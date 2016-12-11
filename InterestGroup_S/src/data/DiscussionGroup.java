@@ -19,11 +19,11 @@ import java.util.ArrayList;
  */
 public class DiscussionGroup implements Serializable{
 
-        private String groupName;           // Every group is identified by its unique group name
-	private String groupID;             // Do we actually need this?
+        private String          groupName;      // Every group is identified by its unique group name
+	private String          groupID;        // Do we actually need this?
 
-        private ArrayList<Post> posts;      // Posts under this group
-        private DataManager dataManager;
+        private ArrayList<Post> posts;          // Posts under this group
+        private DataManager     dataManager;
         
         
 	public DiscussionGroup() {

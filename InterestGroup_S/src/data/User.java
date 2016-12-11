@@ -12,10 +12,10 @@ import java.util.HashSet;
  * @author Ruoping Lin
  */
 public class User implements Serializable{
-    private String id;                          // User is identified by ID
-    private File   userDataFile;                // Loads/Saves this User obj
-    private ArrayList<String> subscribedGroups; // Groups that this user has subscribed to
-    private ArrayList<String> readPostIds;        // Posts that the user has read (retrieve by post ID)
+    private String                  id;               // User is identified by ID
+    private File                    userDataFile;     // Loads/Saves this User obj
+    private ArrayList<String>       subscribedGroups; // Groups that this user has subscribed to
+    private ArrayList<String>       readPostIds;      // Posts that the user has read (retrieve by post ID)
 
     public User() {
         subscribedGroups = new ArrayList<String>();
