@@ -11,6 +11,8 @@ import java.util.Date;
 
 /**
  * Manages a post
+ * server side
+ * NOTE: A newly created post is marked as UNREAD by the author before he reads it
  */
 public class Post  implements Serializable{
     private String groupName;       // Group that the post belongs to
@@ -21,10 +23,6 @@ public class Post  implements Serializable{
     private String postedDate;      // Timestamp    
     private String postID;          // Post is identified by ID
 
-    /**
-    * If a Post object is created by using the default constructor,
-    * a post ID must be assigned by ID setter
-    */
     public Post() {
 
     }
@@ -36,19 +34,26 @@ public class Post  implements Serializable{
     public Post(String postID) {
         this.postID = postID;
     }
+    
     /** 
-     * Group that this post belongs to
+     * Which group that the post belongs to
      * @return group
      */
     public String getGroupName() {
         return this.groupName;
     }
-    public void setGroup(String groupName) {
+    
+    /**
+     * Which group that the post belongs to
+     * @Usage subcommand of rg, composition of a new post
+     * @param groupName 
+     */
+    public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
     
     /**
-     *
+     * Which group that the post belongs to
      * @return  group ID
      */
     public String getGroupID() {
@@ -56,7 +61,7 @@ public class Post  implements Serializable{
     }
     /**
      * Group name must be consistent with group ID
-     * So please take a look of DisscussionGroupList.json 
+     * @Usage subcommand of rg
      */
     public void setGroupID(String groupID) {
         this.groupID = groupID;
@@ -69,6 +74,12 @@ public class Post  implements Serializable{
     public String getPostByID() {
         return this.postID;
     }
+    
+    /**
+     * Assigns an unique ID to a new post
+     * @Usage subcommand of rg, composition of a new post
+     * @param postID a post is identified by its ID
+     */
     public void setPostID(String postID) {
         //@bug: if an existing post has the same ID# as the newly created one,
         // the new post will overwrite old post
@@ -78,22 +89,33 @@ public class Post  implements Serializable{
     public String getPostSubject() {
         return this.subject;
     }
+    
+    /**
+     * @Usage: subcommand of rg, composition of a new post
+     * @param subject 
+     */
     public void setPostSubject(String subject) {
         this.subject = subject;
     }
     /**
-     * Gets post's author
+     * Gets a post's author
      * @return 
      */
     public String getPostAuthor() {
         return this.author;
     }
+    
+    /**
+     * @Usage subcommand of rg, composition of a new post
+     * @param author 
+     */
     public void setPostAuthor(String author) {
         this.author = author;
     }
     
     /**
-     * 
+     * Gets a post's content
+     * @Usage subcommand of rg, displaying
      * @return 
      */
     public String getPostContent() {
@@ -101,8 +123,8 @@ public class Post  implements Serializable{
     }
     
     /**
-     * Writes content of a post
-     * For subcommand rgp (post to group) of rg (read group)
+     * Writes content 
+     * @Usage subcommand of rg, composition of a new post
      * @param content 
      */
     public void setPostContent(String content) {
@@ -111,13 +133,16 @@ public class Post  implements Serializable{
     
     /**
      * When the post is created
+     * @Usage subcommand of rg, displaying
      * @return a string representation of posted date
      */
     public String getPostedDate() {
         return this.postedDate;
     }
+    
     /**
      * Takes a Date obj, converts it to String
+     * @Usage subcommand of rg, composition a new post
      * @param curDate 
      */
     public void setPostedDate(Date curDate) {
