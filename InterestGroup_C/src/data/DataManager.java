@@ -1,6 +1,5 @@
 package data;
 
-
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +17,7 @@ import data.Constants.*;
 import java.text.ParseException;
 
 /**
- *
+ * client side
  * @author Ruoping Lin
  */
 
@@ -33,17 +32,18 @@ public class DataManager implements Serializable{
     private Post               post;
     private String             userID;
     
-    // For User obj under saved directory
+    // Default paths for retrieving users, posts, and groups
     public static final String DEFAULT_PATH = "src/saved/";  
     public static final String DISCUSSION_GROUP_LIST_PATH = "src/DiscussionGroupList/";
     public static final String DISCUSSION_GROUP_FILENAME = "DiscussionGroupList";
     public static final String POST_LIST_PATH = "src/PostList/";
-    public static final String JSON_EXTENSION = ".json";     
+    public static final String JSON_EXTENSION = ".json";   
+    
+    // Constants for User, Post, and Group
     public static final String USER_ID = "USER_ID";
     public static final String USER_NAME = "USER_NAME";
     public static final String SUBSCRIBED_GROUPS = "SUBSCRIBED_GROUPS";
     public static final String READ_POST_ID = "READ_POST_ID";
-    
     public static final String GROUP_ID = "GROUP_ID";
     public static final String GROUP_NAME = "GROUP_NAME";
     public static final String POST_ID = "POST_ID";
@@ -51,7 +51,13 @@ public class DataManager implements Serializable{
     public static final String TIMESTAMP = "TIMESTAMP";
     public static final String SUBJECT = "SUBJECT";
     public static final String CONTENT = "CONTENT";
-
+    
+//    public static void main(String[] args) {
+//        Post post = new Post("123324");
+//        DataManager dm = new DataManager();
+//        dm.saveCreatedPost(post);
+//        
+//    }
     
     public DataManager() {
         
@@ -175,7 +181,7 @@ public class DataManager implements Serializable{
     }
     
     /**
-     * Loads all existing posts from data base
+     * Helper method for loading all existing posts from data base
      * @Usage once server starts running
      * @return a list of posts
      */
@@ -273,11 +279,11 @@ public class DataManager implements Serializable{
     } 
     
     /**
-     * Saves newly created post
+     * Helper method for saving newly created post
      * @Usage subcommand of rg: creates a new post
      * @param saveTo 
      */
-    public void SaveCreatedPost(Post post, Path saveTo) {
+    private void saveCreatedPost(Post post, Path saveTo) {
        this.post = (Post) post;
         
        JsonFactory jsonFactory = new JsonFactory();
@@ -304,11 +310,25 @@ public class DataManager implements Serializable{
     }
     
     /**
-     * Saves posts with newly created posts
+     * Saves a newly created post
+     * @param post 
+     */
+    public void saveCreatedPost(Post post) {
+       this.post = (Post) post;
+       File saveFile = new File(POST_LIST_PATH + post.getPostByID() + JSON_EXTENSION);
+       saveCreatedPost(this.post, saveFile.toPath());
+    }
+    
+    /**
+     * Saves all posts
      * @param allPosts 
      */
     public void saveAllPosts(ArrayList<Post> allPosts) {
-        
+        if (!allPosts.isEmpty())
+            for (Post post: allPosts)
+                saveCreatedPost(post);
+        else
+            System.out.println("Post list is empty");
     }
     
     /**

@@ -290,7 +290,7 @@ public class DataManager implements Serializable{
      * @Usage subcommand of rg: creates a new post
      * @param saveTo 
      */
-    public void SaveCreatedPost(Post post, Path saveTo) {
+    private void saveCreatedPost(Post post, Path saveTo) {
        this.post = (Post) post;
         
        JsonFactory jsonFactory = new JsonFactory();
@@ -317,11 +317,25 @@ public class DataManager implements Serializable{
     }
     
     /**
-     * Saves posts with newly created posts
+     * Saves a newly created post
+     * @param post 
+     */
+    public void saveCreatedPost(Post post) {
+       this.post = (Post) post;
+       File saveFile = new File(POST_LIST_PATH + post.getPostByID() + JSON_EXTENSION);
+       saveCreatedPost(this.post, saveFile.toPath());
+    }
+    
+    /**
+     * Saves all posts
      * @param allPosts 
      */
     public void saveAllPosts(ArrayList<Post> allPosts) {
-        
+        if (!allPosts.isEmpty())
+            for (Post post: allPosts)
+                saveCreatedPost(post);
+        else
+            System.out.println("Post list is empty");
     }
     
     /**
