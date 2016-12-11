@@ -1,6 +1,8 @@
 package data;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -8,19 +10,20 @@ import java.io.Serializable;
  */
 
 /**
- * Manager a post
+ * Manages a post
  */
 public class Post  implements Serializable{
     private String groupName;       // Group that the post belongs to
+    private String groupID;         // Do we actually need this? We'll identify groups by their unique names
     private String subject;         // Post's subject
     private String author;          // Post's author
-    private String content;        
+    private String content;         // Post's content
     private String postedDate;      // Timestamp    
-    private String postID;          // Post is identified by an ID
+    private String postID;          // Post is identified by ID
 
     /**
     * If a Post object is created by using the default constructor,
-    * a post ID must be specified by using the setter method
+    * a post ID must be assigned by ID setter
     */
     public Post() {
 
@@ -45,6 +48,21 @@ public class Post  implements Serializable{
     }
     
     /**
+     *
+     * @return  group ID
+     */
+    public String getGroupID() {
+        return this.groupID;
+    }
+    /**
+     * Group name must be consistent with group ID
+     * So please take a look of DisscussionGroupList.json 
+     */
+    public void setGroupID(String groupID) {
+        this.groupID = groupID;
+    }
+    
+    /**
      * Retrieves a post by ID
      * @return 
      */
@@ -52,9 +70,17 @@ public class Post  implements Serializable{
         return this.postID;
     }
     public void setPostID(String postID) {
+        //@bug: if an existing post has the same ID# as the newly created one,
+        // the new post will overwrite old post
         this.postID = postID;
     }
     
+    public String getPostSubject() {
+        return this.subject;
+    }
+    public void setPostSubject(String subject) {
+        this.subject = subject;
+    }
     /**
      * Gets post's author
      * @return 
@@ -90,8 +116,14 @@ public class Post  implements Serializable{
     public String getPostedDate() {
         return this.postedDate;
     }
-    public void setPostedDate(String date) {
-        this.postedDate = date;
+    /**
+     * Takes a Date obj, converts it to String
+     * @param curDate 
+     */
+    public void setPostedDate(Date curDate) {
+        SimpleDateFormat format = new SimpleDateFormat();
+        String DateToString = format.format(curDate);
+        this.postedDate = DateToString;
     }
     
 

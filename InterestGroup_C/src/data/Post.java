@@ -1,6 +1,8 @@
 package data;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -16,7 +18,7 @@ public class Post  implements Serializable{
     private String author;          // Post's author
     private String content;        
     private String postedDate;      // Timestamp    
-    private String postID;          // Post is identified by an ID
+    private String postID;          // Post is identified by ID
 
     /**
     * If a Post object is created by using the default constructor,
@@ -55,6 +57,12 @@ public class Post  implements Serializable{
         this.postID = postID;
     }
     
+    public String getPostSubject() {
+        return this.subject;
+    }
+    public void setPostSubject(String subject) {
+        this.subject = subject;
+    }
     /**
      * Gets post's author
      * @return 
@@ -90,8 +98,14 @@ public class Post  implements Serializable{
     public String getPostedDate() {
         return this.postedDate;
     }
-    public void setPostedDate(String date) {
-        this.postedDate = date;
+    /**
+     * Takes a Date obj, converts it to String
+     * @param curDate 
+     */
+    public void setPostedDate(Date curDate) {
+        SimpleDateFormat format = new SimpleDateFormat();
+        String DateToString = format.format(curDate);
+        this.postedDate = DateToString;
     }
     
 

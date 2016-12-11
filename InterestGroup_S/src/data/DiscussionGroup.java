@@ -10,17 +10,20 @@ import java.util.ArrayList;
 
 /**
  * Managers a discussion group
+ * A list of discussion group is stored in DiscussionGroupList.json 
+ * DiscussionGroupList.json is formatted as (group ID: group name)
  */
 public class DiscussionGroup implements Serializable{
 
         private String groupName;           // Every group is identified by its unique group name
-	private ArrayList<Post> posts;      // Posts under this group
-       
+	private String groupID;             // Also an identifier. Consistent with group name
+
+        private ArrayList<Post> posts;      // Posts under this group
         private DataManager dataManager;
         
         /**
          * If a DiscussionGroup object is created by using the default constructor,
-         * a group name must be specified by using the setter method
+         * a group name must be assigned by groupName setter
          */
 	public DiscussionGroup() {
             
@@ -34,12 +37,27 @@ public class DiscussionGroup implements Serializable{
             dataManager = new DataManager();
         }
 
+        /**
+         * Uses group name to identify each group
+         * @return 
+         */
         public String getGroupName() {
             return this.groupName;
         }
         
         public void setGroupName(String groupName) {
             this.groupName = groupName;
+        }
+        
+        /**
+         * We use groupName to distinguish groups
+         * @return 
+         */
+        public String getGroupID() {
+            return this.groupID;
+        }
+        public void setGroupiD(String groupID) {
+            this.groupID = groupID;
         }
         
         /**
