@@ -16,4 +16,9 @@ public final class State implements Serializable {
         public static final String IN_SG = "IN SG CMD";
         // in "rg" command
         public static final String IN_RG = "IN RG CMD";
+        // in "rg" sub-command - "p"
+        public static final String IN_RG_P = "IN RG SUB P";
+        // in "rg" sub-command - "[id]"
+        public static final String IN_RG_ID = "IN RG SUB ID";
+        
 }

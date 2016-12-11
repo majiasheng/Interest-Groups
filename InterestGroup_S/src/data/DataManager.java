@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import static java.lang.ProcessBuilder.Redirect.to;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -74,13 +75,21 @@ public class DataManager implements Serializable{
         
     }
     
+     /**
+     * Saves an User obj
+     * @param user 
+     */
+    public void saveUserData(User user) {
+        File userFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
+        saveUserData(user, userFile.toPath());
+    }
     /**
      * Saves an User obj
      * @Usage login. If login id does not exist, create one then, and save id to database
      * @param user 
      * @param saveTo
      */
-    public void saveUserData(User user, Path saveTo) {
+    private void saveUserData(User user, Path saveTo) {
         
         JsonFactory jsonFactory = new JsonFactory();
         this.user = (User) user;
@@ -116,6 +125,13 @@ public class DataManager implements Serializable{
         
     }
     
+    public void loadUserData(User user) throws IOException {
+        File userFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
+        loadUserData(user, userFile.toPath());
+        
+    }
+    
+    
     /**
      * Loads an existing user's data
      * @Usage login
@@ -123,7 +139,7 @@ public class DataManager implements Serializable{
      * @param loadFrom
      * @throws IOException 
      */
-    public void loadUserData(User user, Path loadFrom) throws IOException {
+    private void loadUserData(User user, Path loadFrom) throws IOException {
         
         JsonFactory jsonFactory = new JsonFactory();
         JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));
@@ -172,14 +188,14 @@ public class DataManager implements Serializable{
 
         for (int i = 0; i < listOfFiles.length; i++) {
             String userFileName = "./src/saved/" + listOfFiles[i].getName();
-//            System.out.println("");
             Path userFilePath = Paths.get(userFileName);
 
-            System.out.println(userFileName);
-            System.out.println(userFilePath.getFileName());
+            // System.out.println(userFileName);
+            // System.out.println(userFilePath.getFileName());
             JsonFactory jsonFactory = new JsonFactory();
             JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(userFilePath));
             User temp = new User();
+
             loadUserData(temp, userFilePath);
             allUsers.add(temp);
         }
@@ -237,7 +253,7 @@ public class DataManager implements Serializable{
      * @throws IOException
      * @throws ParseException parses String to SimpleDateFormat
      */
-    public void loadPost(Post post, Path loadFrom) throws IOException, ParseException {
+    private void loadPost(Post post, Path loadFrom) throws IOException, ParseException {
         
         JsonFactory jsonFactory = new JsonFactory();
         JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));

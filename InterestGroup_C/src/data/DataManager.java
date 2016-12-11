@@ -52,10 +52,12 @@ public class DataManager implements Serializable{
     public static final String SUBJECT = "SUBJECT";
     public static final String CONTENT = "CONTENT";
     
-//    public static void main(String[] args) {
-//        Post post = new Post("123324");
+//    public static void main(String[] args) throws IOException {
 //        DataManager dm = new DataManager();
-//        dm.saveCreatedPost(post);
+//        
+//        User user = new User("111");
+//        dm.loadUserData(user);
+//        System.out.println(user.getSubscribedGroups());
 //        
 //    }
     
@@ -69,11 +71,20 @@ public class DataManager implements Serializable{
     
     /**
      * Saves an User obj
+     * @param user 
+     */
+    public void saveUserData(User user) {
+        File userFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
+        saveUserData(user, userFile.toPath());
+    }
+    
+    /**
+     * Saves an User obj
      * @Usage login. If login id does not exist, create one then, and save id to database
      * @param user 
      * @param saveTo
      */
-    public void saveUserData(User user, Path saveTo) {
+    private void saveUserData(User user, Path saveTo) {
         
         JsonFactory jsonFactory = new JsonFactory();
         this.user = (User) user;
@@ -109,6 +120,12 @@ public class DataManager implements Serializable{
         
     }
     
+    public void loadUserData(User user) throws IOException {
+        File userFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
+        loadUserData(user, userFile.toPath());
+        
+    }
+    
     /**
      * Loads an existing user's data
      * @Usage login
@@ -116,7 +133,7 @@ public class DataManager implements Serializable{
      * @param loadFrom
      * @throws IOException 
      */
-    public void loadUserData(User user, Path loadFrom) throws IOException {
+    private void loadUserData(User user, Path loadFrom) throws IOException {
         
         JsonFactory jsonFactory = new JsonFactory();
         JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));
@@ -185,7 +202,7 @@ public class DataManager implements Serializable{
      * @Usage once server starts running
      * @return a list of posts
      */
-    public ArrayList<Post> loadAllPosts() throws IOException, ParseException {
+    private ArrayList<Post> loadAllPosts() throws IOException, ParseException {
         ArrayList<Post> allPosts = new ArrayList<>();
         
         // load all posts from data base
@@ -230,7 +247,7 @@ public class DataManager implements Serializable{
      * @throws IOException
      * @throws ParseException parses String to SimpleDateFormat
      */
-    public void loadPost(Post post, Path loadFrom) throws IOException, ParseException {
+    private void loadPost(Post post, Path loadFrom) throws IOException, ParseException {
         
         JsonFactory jsonFactory = new JsonFactory();
         JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));

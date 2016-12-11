@@ -144,16 +144,10 @@ public class InterestGroup_Server {
             return sg_handler();
             
         } else if(command.get(0).equals(Constants.RG)) {
-            System.out.println("DEBUG: client sent rg");
             //TODO: return handler's response to client
-            if(command.size() == 3) {
-                // 1-gname, 2-N
-                rg_handler(command.get(1), Integer.parseInt(command.get(2)));
-            } else {
-                rg_handler(command.get(1));
-            }
-
-            return null;
+            
+            return rg_handler(command.get(1));
+            
         } else if(command.get(0).equals(Constants.LOGOUT)) {
             // first check if the client request is LOGOUT
             
@@ -215,7 +209,7 @@ public class InterestGroup_Server {
                     and return it to the client
         */
         if(doesUserExist(id)) {
-            System.out.println("returning user " + id);
+            System.out.println("Returning user " + id);
             return ids_users_HashMap.get(id);
         } else {
             User newUser = new User(id);
@@ -258,11 +252,12 @@ public class InterestGroup_Server {
     /**
      * read group
      */
-    static void rg_handler(String gname) {
+    static DiscussionGroup rg_handler(String gname) {
             /* unread (new) posts should be displayed first*/
             DiscussionGroup g;
             g = gnames_groups_HashMap.get(gname);
-            //TODO:
+            
+            return g;
     }
     
     /**
@@ -281,7 +276,7 @@ public class InterestGroup_Server {
     /**
      * Initializes necessary components on start of server
      */
-    private static void init() {
+    private static void init() throws IOException {
         // init data manager 
         dataManager = new DataManager();
         
@@ -291,7 +286,7 @@ public class InterestGroup_Server {
         // init hash map of gnames,groups
         gnames_groups_HashMap = new HashMap<>();
         // load all groups from data manager
-        for(DiscussionGroup g : dataManager.loadAllGroups()) {
+        for(DiscussionGroup g : dataManager.loadDiscussionGroups()) {
             gnames_groups_HashMap.put(g.getGroupName(), g);
         }
         

@@ -11,6 +11,7 @@ public class Constants {
     public static final String DEFAULT_PATH = "src/saved/";     
     public static final String JSON_EXTENSION = ".json";  
     
+    public static final int N = 5;
     // ALL GROUPS
     public static final String PROGRAMMING = "comp.programming";  
     public static final String C = "comp.lang.c";  

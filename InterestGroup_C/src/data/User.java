@@ -77,6 +77,7 @@ public class User implements Serializable{
      **/
     public void subscribeGroup(String subscribedGroup) {
         this.subscribedGroups.add(subscribedGroup);
+        
     }
     
     /**
