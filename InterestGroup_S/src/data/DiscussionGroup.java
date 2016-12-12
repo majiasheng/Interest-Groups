@@ -70,8 +70,10 @@ public class DiscussionGroup implements Serializable{
             posts = new ArrayList<>();
             
             // Loads all posts from data base (group name must be known)
-            posts = dataManager.loadAllPosts();
-            
+            if (this.groupID != null)
+                posts = dataManager.loadAllPosts(this.groupID);
+            else 
+                System.out.println("Group ID is empty");
             return posts;
         }
         

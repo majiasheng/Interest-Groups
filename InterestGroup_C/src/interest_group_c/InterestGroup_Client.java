@@ -201,6 +201,7 @@ public class InterestGroup_Client {
         /*TODO: print all groups N at a time 
                 (if N is not specified, use a default value) */
         
+        
         // update current state as "ag"
         state = State.IN_AG;
         
@@ -376,6 +377,7 @@ public class InterestGroup_Client {
      */
     private static void ag_handler(String subCMD) {
         //TODO
+        
     }
     
     /**
