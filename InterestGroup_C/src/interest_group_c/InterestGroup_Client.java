@@ -223,7 +223,10 @@ public class InterestGroup_Client {
     }
     
     /**
-     * Enables sub commands available under "ag"
+     * Enables sub commands available under "ag" mode
+     * 
+     * Subcommands:
+     * n: print all groups N at a time. if N is not specified, use a default value
      */
     private static void ag_mode(ArrayList response, int n) {
         System.out.println("################################");
@@ -231,8 +234,11 @@ public class InterestGroup_Client {
         System.out.println("################################");
         
         ArrayList<String> allGroups = (ArrayList<String>)response;
-        /*TODO: print all groups N at a time 
-                (if N is not specified, use a default value) */
+        
+        // Gets groups that the user has subscribed 
+        ArrayList<String> subscribedGroups = new ArrayList<>();
+        subscribedGroups = user.getSubscribedGroups(); 
+        
         // update current state as "ag"
         state = State.IN_AG;
         
@@ -245,7 +251,11 @@ public class InterestGroup_Client {
         
         // Prints the first n group names as soon as user enters ag mode
         while (startPrintN < endPrintN) {
-            System.out.println("(" + (startPrintN + 1) + ") " + allGroups.get(startPrintN));
+            // If subscribed group list contains current group, add (s) in front, else leave it empty
+            if (subscribedGroups.contains(allGroups.get(startPrintN)))
+                System.out.println("(" + (startPrintN + 1) + ") (s) " + allGroups.get(startPrintN));
+            else
+                System.out.println("(" + (startPrintN + 1) + ") ( ) " + allGroups.get(startPrintN));
             startPrintN++;
             
             // in case n > number of groups
@@ -300,12 +310,12 @@ public class InterestGroup_Client {
                     startPrintN = endPrintN;
                     endPrintN += n;
                     
-                    n_handler_ag(allGroups, startPrintN, endPrintN);
+                    n_handler_ag(allGroups, subscribedGroups, startPrintN, endPrintN);
 //                    
 //                } else {
 //                    System.out.println("Invalid sub cmd");
 //                }
-            }else {
+            } else {
                 System.out.println("ERROR: NO SUCH COMMAND");
                 printSubCMDMenu_AG();
             }
@@ -318,10 +328,14 @@ public class InterestGroup_Client {
      * @param startPrintNum start printing on this index
      * @param endPrintN number of prints
      */
-    static void n_handler_ag(ArrayList<String> allGroups, int startPrintN, int endPrintN) {
+    static void n_handler_ag(ArrayList<String> allGroups, ArrayList<String> subscribedGroups, int startPrintN, int endPrintN) {
         
         while (startPrintN < endPrintN && startPrintN < allGroups.size()) {
-            System.out.println("(" + (startPrintN + 1) + ") " + allGroups.get(startPrintN));
+            // If subscribed group list contains current group, add (s) in front, else leave it empty
+            if (subscribedGroups.contains(allGroups.get(startPrintN)))
+                System.out.println("(" + (startPrintN + 1) + ") (s) " + allGroups.get(startPrintN));
+            else
+                System.out.println("(" + (startPrintN + 1) + ") ( ) " + allGroups.get(startPrintN));
             startPrintN++;
             
             // If all groups are displayed, the program exits from the ag command mode
