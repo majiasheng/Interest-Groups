@@ -354,6 +354,20 @@ public class DataManager implements Serializable{
             System.out.println("Post list is empty");
     }
     
+//    /**
+//     * Loads discussion group names
+//     * @return
+//     * @throws IOException 
+//     */
+//    public ArrayList<String> loadDiscussionGroupNames() throws IOException {
+//        ArrayList<DiscussionGroup> allGroup = loadDiscussionGroups();
+//        ArrayList<String> allGroupNames = new ArrayList<String>();
+//        for (DiscussionGroup dg: allGroup)
+//            allGroupNames.add(dg.getGroupName());
+//        
+//        return allGroupNames;            
+//    }
+    
     /**
      * Loads all existing discussion from data base
      * @Usage subcommand of ag: lists all groups

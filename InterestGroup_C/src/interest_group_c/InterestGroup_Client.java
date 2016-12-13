@@ -4,6 +4,7 @@
  *
  * @author Jia Sheng Ma
  */
+//import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import interest_group_c.State;
 import data.Constants;
 import data.DataManager;
@@ -28,12 +29,12 @@ import java.util.logging.Logger;
  */
 public class InterestGroup_Client {
     private static DataManager dataManager;
-    private static String state;     // user state in the session
+    private static String state;            // user state in the session
     private static String prompt;
     
-    private static String command;  // user command
+    private static String command;          // user command
     private static ArrayList<String> cmdTokens;
-    private static Object response; // server response
+    private static Object response;         // server response
     
     private static Socket socket;
     private static ObjectOutputStream output_to_server;
@@ -43,6 +44,8 @@ public class InterestGroup_Client {
     private static int portnumber;
     private static User user;
     private static Scanner user_input_scn;
+    
+    private static boolean isLastGroup;            // Subcommand of ag. Determines if all groups have been displayed. If so, exit from ag mode
     
     /**
      * @param args the command line arguments
@@ -158,7 +161,7 @@ public class InterestGroup_Client {
      * @param input_from_server
      * @param output_to_server 
      */
-    public static void handleServerResponse(Object response) {
+    public static void handleServerResponse(Object response) throws IOException {
         
         /* server response is just an object depending one what 
            request the client sent to the server 
@@ -170,11 +173,33 @@ public class InterestGroup_Client {
         String cmd = cmdTokens.get(0);
         
         if(cmd.equals(Constants.AG)) {
-            ag_mode();
+            if (cmdTokens.size() == 1)          // If N is not given, use default N
+                ag_mode((ArrayList)response);
+            else
+                ag_mode((ArrayList)response, Integer.parseInt(cmdTokens.get(1)));
+            
         } else if(cmd.equals(Constants.SG)) {
-            sg_mode();
+            int subCmd=0;
+            int count=0;
+            if(cmdTokens.size()>1){
+                subCmd = Integer.parseInt(cmdTokens.get(1));
+                count =0;
+                for(int i=0;i<subCmd;i++){
+                    System.out.println((i+1) +".   "+((ArrayList)((ArrayList)response).get(i)).get(1)+ "  " +((ArrayList)((ArrayList)response).get(i)).get(0));
+                    count++;
+                }
+            }else{
+                for(int i=0;i<((ArrayList)response).size();i++){
+                    System.out.println((i+1) +".   "+((ArrayList)((ArrayList)response).get(i)).get(1)+ "  " +((ArrayList)((ArrayList)response).get(i)).get(0));
+                }
+            }
+            System.out.println();
+            sg_mode((ArrayList)response,count,subCmd);
         } else if(cmd.equals(Constants.RG)) {
-            rg_mode();
+            for(int i=0;i<((ArrayList)response).size();i++){
+                System.out.println((i+1) +".   "+((ArrayList)((ArrayList)response).get(i)).get(0)+ "  " +((ArrayList)((ArrayList)response).get(i)).get(1));
+            }
+            rg_mode((ArrayList)response);
         } else if(cmd.equals(Constants.LOGIN)) {            
             handleLoginResponse();
         } 
@@ -190,9 +215,17 @@ public class InterestGroup_Client {
     }
     
     /**
+     * Helper method: in case N is not given by the user
+     * @param response 
+     */
+    private static void ag_mode(ArrayList response) {
+        ag_mode(response, Constants.N);
+    }
+    
+    /**
      * Enables sub commands available under "ag"
      */
-    private static void ag_mode() {
+    private static void ag_mode(ArrayList response, int n) {
         System.out.println("################################");
         System.out.println("#          all groups          #");
         System.out.println("################################");
@@ -200,11 +233,29 @@ public class InterestGroup_Client {
         ArrayList<String> allGroups = (ArrayList<String>)response;
         /*TODO: print all groups N at a time 
                 (if N is not specified, use a default value) */
-        
-        
         // update current state as "ag"
         state = State.IN_AG;
         
+        // Determines if last group name has been displayed. If true, break the do while loop, and exit from ag mode
+        isLastGroup = false;
+        
+        // Displays N groups at a time
+        int startPrintN = 0;    // incremented by n
+        int endPrintN   = n;    // incremented by n
+        
+        // Prints the first n group names as soon as user enters ag mode
+        while (startPrintN < endPrintN) {
+            System.out.println("(" + (startPrintN + 1) + ") " + allGroups.get(startPrintN));
+            startPrintN++;
+            
+            // in case n > number of groups
+            if(startPrintN == allGroups.size()) {
+                state = State.LOGGED_IN;
+                printMainMenuHeader();
+                break;
+            }
+        }
+       
         do { // listen for user commands 
             printPrompt();
             command = user_input_scn.nextLine();
@@ -215,23 +266,79 @@ public class InterestGroup_Client {
                 state = State.LOGGED_IN;
                 printMainMenuHeader();
                 break;
-            } else if(cmd.equals("s") || cmd.equals("u") || cmd.equals("n")) {
+            } else if(cmd.equals("s")) {
                 if(validateSubCMD()) {
-                    ag_handler(cmd);
+                    int subsIndex = 1;
+                    // subscribe to group given by its index (group ID)
+                    while (subsIndex < cmdTokens.size()) {
+                        s_handler_ag(cmdTokens.get(subsIndex));
+                        subsIndex++;
+                    }
                 } else {
                     //TODO:
                 }
-            } else {
+                
+            } else if (cmd.equals("u")){
+                if(validateSubCMD()) {
+                    int subsIndex = 1;
+                    // unsubscribe to group given by its index (group ID)
+                    while (subsIndex < cmdTokens.size()) {
+                        u_handler_ag(cmdTokens.get(subsIndex));
+                        subsIndex++;
+                    }
+                    
+                } else {
+                    //TODO:
+                }
+            } else if (cmd.equals("n")) {
+                if (isLastGroup == true) {
+                    state = State.LOGGED_IN;
+                    printMainMenuHeader();
+                    break;
+                }
+//                if(validateSubCMD()) {
+                    startPrintN = endPrintN;
+                    endPrintN += n;
+                    
+                    n_handler_ag(allGroups, startPrintN, endPrintN);
+//                    
+//                } else {
+//                    System.out.println("Invalid sub cmd");
+//                }
+            }else {
                 System.out.println("ERROR: NO SUCH COMMAND");
                 printSubCMDMenu_AG();
             }
         } while(true);
     } /* end of ag_mode*/
     
+        /**
+     * lists the next N discussion groups
+     * @param allGroups all group names
+     * @param startPrintNum start printing on this index
+     * @param endPrintN number of prints
+     */
+    static void n_handler_ag(ArrayList<String> allGroups, int startPrintN, int endPrintN) {
+        
+        while (startPrintN < endPrintN && startPrintN < allGroups.size()) {
+            System.out.println("(" + (startPrintN + 1) + ") " + allGroups.get(startPrintN));
+            startPrintN++;
+            
+            // If all groups are displayed, the program exits from the ag command mode
+            if(startPrintN >= allGroups.size()) {
+                isLastGroup = true;     // return true, so that user exits from ag mode
+                break;
+            }
+        }
+        
+    }
+    
+    
+    
     /**
      * Enables sub commands available under "sg"
      */
-    private static void sg_mode() {
+    private static void sg_mode(ArrayList response, int count,int subCmd) throws IOException {
         System.out.println("################################");
         System.out.println("#       subscribed groups      #");
         System.out.println("################################");
@@ -248,13 +355,24 @@ public class InterestGroup_Client {
                 printMainMenuHeader();
                 state = State.LOGGED_IN;
                 break;
-            } else if(cmd.equals("u") || cmd.equals("n")) {
-                if(validateSubCMD()) {
-                    sg_handler(cmd);
-                } else {
-                    //TODO: print usage 
+            } else if(cmd.equals("n")){
+                    //sg_handler(cmd);
+                if(response.size()!=(count)) {
+                    for (int i = 0; i < subCmd; i++) {
+                        System.out.println((count + 1) + ".   " + ((ArrayList) ((ArrayList) response).get(count)).get(1) + "  " + ((ArrayList) ((ArrayList) response).get(count)).get(0));
+                        count++;
+                    }
+                }else{
+                    System.out.println("reach end of the list");
                 }
-            } else {
+            }else if(cmd.equals("u")){
+                String subbCmd = cmdTokens.get(1);
+                System.out.println("uuuuu");
+                output_to_server.writeObject((Object)(formatCMD("sg u "+subbCmd)));
+                output_to_server.flush();
+
+
+            }else {
                 System.out.println("ERROR: NO SUCH COMMAND");
                 printSubCMDMenu_SG();
             }
@@ -265,7 +383,7 @@ public class InterestGroup_Client {
     /**
      * Enables sub commands available under "rg"
      */
-    private static void rg_mode() {
+    private static void rg_mode(ArrayList response) throws IOException {
         
         /* if server returns null, i.e. no such group exist, 
            then give feedback to user
@@ -276,7 +394,7 @@ public class InterestGroup_Client {
             return;
         }
         // now we have a group, we can run queries on it 
-        DiscussionGroup group = (DiscussionGroup)response;
+       // DiscussionGroup group = (DiscussionGroup)response;
         
         // max number of post to be displayed at a time
         int N;
@@ -303,7 +421,12 @@ public class InterestGroup_Client {
                 printMainMenuHeader();
                 state = State.LOGGED_IN;
                 break;
-            } 
+            }
+            else if(cmd.equals("1")||cmd.equals("2")||cmd.equals("3")||cmd.equals("4")||cmd.equals("5")||cmd.equals("6")||cmd.equals("7")||cmd.equals("8")||cmd.equals("9")){
+                String subbCmd = cmdTokens.get(0);
+                output_to_server.writeObject((Object)(formatCMD("rg "+subbCmd)));
+                output_to_server.flush();
+            }
             //TODO: the subcommand can be a number as an id, if it is a number, 
             // a sub sub command interface should be displayed
             else if(cmd.equals("r") || cmd.equals("n") || cmd.equals("p")) {
@@ -351,6 +474,7 @@ public class InterestGroup_Client {
         formattedCMD.add(state);
         formattedCMD.add(cmdTokens);
         formattedCMD.add(user);
+
         
         return formattedCMD;
     }
@@ -375,25 +499,26 @@ public class InterestGroup_Client {
      * Takes "s" "u" or "n" as argument, performs operations pertaining to each command
      * @param subCMD 
      */
-    private static void ag_handler(String subCMD) {
+    private static void ag_handler() {
         //TODO
+        
+        
         
     }
     
     /**
      * - subscribe to groups
      */
-    static void s_handler_ag() {}
+    static void s_handler_ag(String subsIndex) {
+    
+    }
 
     /**
      *	unsubscribe
      */
-    static void u_handler_ag() {}
+    static void u_handler_ag(String subsIndex) {}
 
-    /**
-     *	lists the next N discussion groups
-     */
-    static void n_handler_ag() {}
+
     
     /***********************************************
                       sg
