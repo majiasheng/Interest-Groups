@@ -564,13 +564,13 @@ public class InterestGroup_Client {
 //        parseUser = user;
         
         // work
-//        User parseUser = new User(user.getId());
+//        User parseUser = new User("888");
 //        formattedCMD.add(parseUser);
 
         formattedCMD.add(state);
         formattedCMD.add(cmdTokens);
         formattedCMD.add(user);
-
+        System.out.println(user.getSubscribedGroups().toArray().toString());
         
         return formattedCMD;
     }
@@ -633,7 +633,7 @@ public class InterestGroup_Client {
         user.subscribeGroup(allGroups.get(--subsIndex));
         System.out.println("You've successfully subscribed to " + allGroups.get(subsIndex));
         // Saves to local user file
-        dataManager = new DataManager();
+//        dataManager = new DataManager();
         dataManager.saveUserData(user);
     }
 

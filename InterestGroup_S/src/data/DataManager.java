@@ -35,8 +35,17 @@ public class DataManager implements Serializable{
     private Post               post;
     private String             userID;
     public ArrayList<Post>     allposts;
-    // For User obj under saved directory
+    
+    // For IDE
+//    public static final String DEFAULT_PATH = "src/saved/";  
+//    public static final String DEFAULT_PATH_FOLDER = "./src/saved";  
+//    public static final String DISCUSSION_GROUP_LIST_PATH = "src/DiscussionGroupList/";
+//    public static final String DISCUSSION_GROUP_FILENAME = "DiscussionGroupList";
+//    public static final String POST_LIST_PATH = "src/PostList/";
+    
+    // For command line
     public static final String DEFAULT_PATH = "saved/";  
+    public static final String DEFAULT_PATH_FOLDER = "./saved";  
     public static final String DISCUSSION_GROUP_LIST_PATH = "DiscussionGroupList/";
     public static final String DISCUSSION_GROUP_FILENAME = "DiscussionGroupList";
 //    public static final String POST_LIST_PATH = "src/PostList/";
@@ -187,11 +196,11 @@ public class DataManager implements Serializable{
         ArrayList<User> allUsers = new ArrayList<>();
         
         // load all users from data base
-        File folder = new File("./saved");
+        File folder = new File(DEFAULT_PATH_FOLDER);
         File[] listOfFiles = folder.listFiles();
 
         for (int i = 0; i < listOfFiles.length; i++) {
-            String userFileName = "./saved/" + listOfFiles[i].getName();
+            String userFileName = DEFAULT_PATH + listOfFiles[i].getName();
             Path userFilePath = Paths.get(userFileName);
 
             // System.out.println(userFileName);
