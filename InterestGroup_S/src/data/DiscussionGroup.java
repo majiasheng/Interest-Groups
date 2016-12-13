@@ -26,13 +26,13 @@ public class DiscussionGroup implements Serializable{
         private DataManager     dataManager;
         
         
-	public DiscussionGroup() {
+	public DiscussionGroup() throws IOException, ParseException {
             
             groupName = null;              
             dataManager = new DataManager();
 	}
         
-        public DiscussionGroup(String groupName) {
+        public DiscussionGroup(String groupName) throws IOException, ParseException {
             
             this.groupName = groupName;
             dataManager = new DataManager();

@@ -34,7 +34,7 @@ public class DataManager implements Serializable{
     private User               user;
     private Post               post;
     private String             userID;
-    
+    public ArrayList<Post>     allposts = loadAllPosts();
     // For User obj under saved directory
     public static final String DEFAULT_PATH = "src/saved/";  
     public static final String DISCUSSION_GROUP_LIST_PATH = "src/DiscussionGroupList/";
@@ -67,7 +67,7 @@ public class DataManager implements Serializable{
 //    }
 //    
     
-    public DataManager() {
+    public DataManager() throws IOException, ParseException {
         
     }
     
@@ -373,7 +373,7 @@ public class DataManager implements Serializable{
      * @Usage subcommand of ag: lists all groups
      * @return list of existing discussion groups from data base
      */
-    public ArrayList<DiscussionGroup> loadDiscussionGroups() throws IOException {
+    public ArrayList<DiscussionGroup> loadDiscussionGroups() throws IOException, ParseException {
         ArrayList<DiscussionGroup> allGroups = new ArrayList<>();
         JsonFactory jsonFactory = new JsonFactory();
         JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(new File(DISCUSSION_GROUP_LIST_PATH + DISCUSSION_GROUP_FILENAME + JSON_EXTENSION).toPath()));
