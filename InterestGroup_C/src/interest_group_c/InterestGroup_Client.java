@@ -260,8 +260,7 @@ public class InterestGroup_Client {
             
             // in case n > number of groups
             if(startPrintN == allGroups.size()) {
-                state = State.LOGGED_IN;
-                printMainMenuHeader();
+                isLastGroup = true;
                 break;
             }
         }
@@ -277,30 +276,86 @@ public class InterestGroup_Client {
                 printMainMenuHeader();
                 break;
             } else if(cmd.equals("s")) {
-                if(validateSubCMD()) {
-                    int subsIndex = 1;
-                    // subscribe to group given by its index (group ID)
-                    while (subsIndex < cmdTokens.size()) {
-                        s_handler_ag(cmdTokens.get(subsIndex));
-                        subsIndex++;
+                // size > 1 means user has entered at least 1 group that he wants to subscribe
+                if(cmdTokens.size() > 1) {
+                    
+                    boolean isValidRange = true;    // Determines if group index is valid
+                    // Checks if group index is within range 1 - 15. Ignore index = 0 because it is "s"
+                    for (int cmdIndex = 1; cmdIndex < cmdTokens.size(); cmdIndex++) {
+                        
+                        // Throws NumberFormatException when index entered is not a number string
+                        try {
+                            int groupIndex = Integer.parseInt(cmdTokens.get(cmdIndex));
+                            
+                            if ( groupIndex < 1 || groupIndex > 15 ) {
+                                isValidRange = false;   // false if not within 1 - 15
+                                System.out.println("Group index out of range");
+                                break;
+                            } 
+                        } catch (NumberFormatException e) {
+                            isValidRange = false;
+                            System.out.println("Please enter a valid group index");
+                            break;
+                        }
                     }
-                } else {
-                    //TODO:
-                }
-                
-            } else if (cmd.equals("u")){
-                if(validateSubCMD()) {
-                    int subsIndex = 1;
-                    // unsubscribe to group given by its index (group ID)
-                    while (subsIndex < cmdTokens.size()) {
-                        u_handler_ag(cmdTokens.get(subsIndex));
-                        subsIndex++;
+                    
+                    if (isValidRange == true) {
+                        int subsIndex = 1;
+                        // subscribe to group given by its index in the front
+                        while (subsIndex < cmdTokens.size()) {
+                            s_handler_ag(Integer.parseInt(cmdTokens.get(subsIndex)), allGroups);
+                            subsIndex++;
+                        }
                     }
                     
                 } else {
-                    //TODO:
+                    System.out.println("Please enter at least 1 group number.\r\nCommand format example: s 1 2 3");
                 }
+                
+            } else if (cmd.equals("u")){
+                // size > 1 means user has entered at least 1 group that he wants to unsubscribe
+                if(cmdTokens.size() > 1) {
+                    
+                    boolean isValidRange = true;    // Determines if group index is valid
+                    // Checks if group index is within range 1 - 15. Ignore index = 0 because it is "s"
+                    for (int cmdIndex = 1; cmdIndex < cmdTokens.size(); cmdIndex++) {
+                        // Throws NumberFormatException when index entered is not a number string
+                        try {
+                            int groupIndex = Integer.parseInt(cmdTokens.get(cmdIndex));
+                            
+                            if ( groupIndex < 1 || groupIndex > 15 ) {
+                                isValidRange = false;   // false if not within 1 - 15
+                                System.out.println("Group index out of range");
+                                break;
+                            } 
+                        } catch (NumberFormatException e) {
+                            isValidRange = false;
+                            System.out.println("Please enter a valid group index");
+                            break;
+                        }
+                    }
+                    
+                    if (isValidRange == true) {
+                        int subsIndex = 1;
+                        // unsubscribe to group given by its index in the front
+                        while (subsIndex < cmdTokens.size()) {
+                            u_handler_ag(Integer.parseInt(cmdTokens.get(subsIndex)), allGroups);
+                            subsIndex++;
+                        }
+                    }
+                    
+                } else {
+                    System.out.println("Please enter at least 1 group number.\r\nCommand format example: s 1 2 3");
+                }
+                
             } else if (cmd.equals("n")) {
+                
+                // Edge case: if N is 15 (has displayed all group names by command "ag 15"), then "n" will be used to exit ag mode
+                if (n == 15)
+                    isLastGroup = true;
+                
+                // Determines if all groups have been displayed. isLastGroup is set to false 
+                // in the handler method while start index reaches the size of all group names
                 if (isLastGroup == true) {
                     state = State.LOGGED_IN;
                     printMainMenuHeader();
@@ -321,33 +376,6 @@ public class InterestGroup_Client {
             }
         } while(true);
     } /* end of ag_mode*/
-    
-        /**
-     * lists the next N discussion groups
-     * @param allGroups all group names
-     * @param startPrintNum start printing on this index
-     * @param endPrintN number of prints
-     */
-    static void n_handler_ag(ArrayList<String> allGroups, ArrayList<String> subscribedGroups, int startPrintN, int endPrintN) {
-        
-        while (startPrintN < endPrintN && startPrintN < allGroups.size()) {
-            // If subscribed group list contains current group, add (s) in front, else leave it empty
-            if (subscribedGroups.contains(allGroups.get(startPrintN)))
-                System.out.println("(" + (startPrintN + 1) + ") (s) " + allGroups.get(startPrintN));
-            else
-                System.out.println("(" + (startPrintN + 1) + ") ( ) " + allGroups.get(startPrintN));
-            startPrintN++;
-            
-            // If all groups are displayed, the program exits from the ag command mode
-            if(startPrintN >= allGroups.size()) {
-                isLastGroup = true;     // return true, so that user exits from ag mode
-                break;
-            }
-        }
-        
-    }
-    
-    
     
     /**
      * Enables sub commands available under "sg"
@@ -515,22 +543,58 @@ public class InterestGroup_Client {
      */
     private static void ag_handler() {
         //TODO
+       
+    }
+    
+    /**
+     * lists the next N discussion groups
+     * @param allGroups all group names
+     * @param startPrintNum start printing on this index
+     * @param endPrintN number of prints
+     */
+    static void n_handler_ag(ArrayList<String> allGroups, ArrayList<String> subscribedGroups, int startPrintN, int endPrintN) {
         
-        
+        while (startPrintN < endPrintN && startPrintN < allGroups.size()) {
+            // If subscribed group list contains current group, add (s) in front, else leave it empty
+            if (subscribedGroups.contains(allGroups.get(startPrintN)))
+                System.out.println("(" + (startPrintN + 1) + ") (s) " + allGroups.get(startPrintN));
+            else
+                System.out.println("(" + (startPrintN + 1) + ") ( ) " + allGroups.get(startPrintN));
+            startPrintN++;
+            
+            // If all groups are displayed, the program exits from the ag command mode
+            if(startPrintN >= allGroups.size()) {
+                isLastGroup = true;     // return true, so that user exits from ag mode
+                break;
+            }
+        }
         
     }
     
     /**
      * - subscribe to groups
      */
-    static void s_handler_ag(String subsIndex) {
-    
+    static void s_handler_ag(int subsIndex, ArrayList<String> allGroups) {
+        // Adds to subscribed group list
+        user.subscribeGroup(allGroups.get(--subsIndex));
+        System.out.println("You've successfully subscribed to " + allGroups.get(subsIndex));
+        // Saves to local user file
+        dataManager = new DataManager();
+        dataManager.saveUserData(user);
     }
 
     /**
-     *	unsubscribe
+     *	unsubscribe a group
      */
-    static void u_handler_ag(String subsIndex) {}
+    static void u_handler_ag(int subsIndex, ArrayList<String> allGroups) {
+        // Removes group at subsIndex
+        user.unsubscribeGroup(allGroups.get(--subsIndex));
+        System.out.println("You've successfully unsubscribed to " + allGroups.get(subsIndex));
+        // Saves to local user file
+        dataManager = new DataManager();
+        dataManager.saveUserData(user);
+    
+    }
 
 
     
