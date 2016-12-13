@@ -564,7 +564,7 @@ public class InterestGroup_Client {
 //        parseUser = user;
         
         // work
-//        User parseUser = new User("6666");
+//        User parseUser = new User(user.getId());
 //        formattedCMD.add(parseUser);
 
         formattedCMD.add(state);

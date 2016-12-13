@@ -34,12 +34,14 @@ public class DataManager implements Serializable{
     private User               user;
     private Post               post;
     private String             userID;
-    public ArrayList<Post>     allposts = loadAllPosts();
+    public ArrayList<Post>     allposts;
     // For User obj under saved directory
-    public static final String DEFAULT_PATH = "src/saved/";  
-    public static final String DISCUSSION_GROUP_LIST_PATH = "src/DiscussionGroupList/";
+    public static final String DEFAULT_PATH = "saved/";  
+    public static final String DISCUSSION_GROUP_LIST_PATH = "DiscussionGroupList/";
     public static final String DISCUSSION_GROUP_FILENAME = "DiscussionGroupList";
-    public static final String POST_LIST_PATH = "src/PostList/";
+//    public static final String POST_LIST_PATH = "src/PostList/";
+    public static final String POST_LIST_PATH = "PostList/";
+    
     public static final String JSON_EXTENSION = ".json";     
     public static final String USER_ID = "USER_ID";
     public static final String USER_NAME = "USER_NAME";
@@ -67,8 +69,10 @@ public class DataManager implements Serializable{
 //    }
 //    
     
+    
+    
     public DataManager() throws IOException, ParseException {
-        
+        allposts = loadAllPosts();
     }
     
     private void checkExistenceOfUser() {
@@ -183,11 +187,11 @@ public class DataManager implements Serializable{
         ArrayList<User> allUsers = new ArrayList<>();
         
         // load all users from data base
-        File folder = new File("./src/saved");
+        File folder = new File("./saved");
         File[] listOfFiles = folder.listFiles();
 
         for (int i = 0; i < listOfFiles.length; i++) {
-            String userFileName = "./src/saved/" + listOfFiles[i].getName();
+            String userFileName = "./saved/" + listOfFiles[i].getName();
             Path userFilePath = Paths.get(userFileName);
 
             // System.out.println(userFileName);
@@ -216,6 +220,10 @@ public class DataManager implements Serializable{
         File[] listOfFiles = folder.listFiles();
 
         for (int i = 0; i < listOfFiles.length; i++) {
+            System.out.println(listOfFiles[i].toString());
+        }
+        
+        for (int i = 0; i < listOfFiles.length; i++) {
             String postFileName = POST_LIST_PATH + listOfFiles[i].getName();
             Path postFilePath = Paths.get(postFileName);
 
@@ -223,9 +231,11 @@ public class DataManager implements Serializable{
             JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(postFilePath));
             Post post = new Post();
             loadPost(post, postFilePath);
+
             allPosts.add(post);
         }
-        
+        if (allPosts.isEmpty())
+            System.out.println("No Post");
         return allPosts; 
     }
     

@@ -33,10 +33,10 @@ public class DataManager implements Serializable{
     private String             userID;
     
     // Default paths for retrieving users, posts, and groups
-    public static final String DEFAULT_PATH = "src/saved/";  
-    public static final String DISCUSSION_GROUP_LIST_PATH = "src/DiscussionGroupList/";
+    public static final String DEFAULT_PATH = "saved/";  
+    public static final String DISCUSSION_GROUP_LIST_PATH = "DiscussionGroupList/";
     public static final String DISCUSSION_GROUP_FILENAME = "DiscussionGroupList";
-    public static final String POST_LIST_PATH = "src/PostList/";
+    public static final String POST_LIST_PATH = "PostList/";
     public static final String JSON_EXTENSION = ".json";   
     
     // Constants for User, Post, and Group
@@ -177,11 +177,11 @@ public class DataManager implements Serializable{
         ArrayList<User> allUsers = new ArrayList<>();
         
         // load all users from data base
-        File folder = new File("./src/saved");
+        File folder = new File("./saved");
         File[] listOfFiles = folder.listFiles();
 
         for (int i = 0; i < listOfFiles.length; i++) {
-            String userFileName = "./src/saved/" + listOfFiles[i].getName();
+            String userFileName = "./saved/" + listOfFiles[i].getName();
 //            System.out.println("");
             Path userFilePath = Paths.get(userFileName);
 
