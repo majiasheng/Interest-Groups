@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * client side 
  */
 public class InterestGroup_Client {
-    private static DataManager dataManager = new DataManager();
+    private static DataManager dataManager;
     private static String state;            // user state in the session
     private static String prompt;
     
@@ -252,8 +252,8 @@ public class InterestGroup_Client {
         isLastGroup = false;
         
         // Displays N groups at a time
-        int startPrintN = 0;    // incremented by n
-        int endPrintN   = n;    // incremented by n
+        int startPrintN = 0;    // will be set to endPrintN
+        int endPrintN   = n;    // will be incremented by n
         
         // Prints the first n group names as soon as user enters ag mode
         while (startPrintN < endPrintN) {
@@ -282,14 +282,14 @@ public class InterestGroup_Client {
                 printMainMenuHeader();
                 break;
             } else if(cmd.equals("s")) {
-                // size > 1 means user has entered at least 1 group that he wants to subscribe
+                // size > 1 means user has entered at least 1 group that he wants to subscribe to
                 if(cmdTokens.size() > 1) {
                     
                     boolean isValidRange = true;    // Determines if group index is valid
                     // Checks if group index is within range 1 - 15. Ignore index = 0 because it is "s"
                     for (int cmdIndex = 1; cmdIndex < cmdTokens.size(); cmdIndex++) {
                         
-                        // Throws NumberFormatException when index entered is not a number string
+                        // Catches NumberFormatException when index entered is not a number string
                         try {
                             int groupIndex = Integer.parseInt(cmdTokens.get(cmdIndex));
                             
@@ -307,7 +307,7 @@ public class InterestGroup_Client {
                     
                     if (isValidRange == true) {
                         int subsIndex = 1;
-                        // subscribe to group given by its index in the front
+                        // subscribe to group given by its index (shown in the front)
                         while (subsIndex < cmdTokens.size()) {
                             s_handler_ag(Integer.parseInt(cmdTokens.get(subsIndex)), allGroups);
                             subsIndex++;
@@ -350,7 +350,7 @@ public class InterestGroup_Client {
                             u_handler_ag(Integer.parseInt(cmdTokens.get(subsIndex)), allGroups);
                             subsIndex++;
                         }
-                        output_to_server.writeObject((Object)(formatCMD("ag u")));
+                        output_to_server.writeObject((Object)(formatCMD("ag u" + user)));
                         output_to_server.flush();
                     }
                     
@@ -365,7 +365,7 @@ public class InterestGroup_Client {
                     isLastGroup = true;
                 
                 // Determines if all groups have been displayed. isLastGroup is set to false 
-                // in the handler method while start index reaches the size of all group names
+                // in the handler method while "start index" reaches the size of all group names
                 if (isLastGroup == true) {
                     state = State.LOGGED_IN;
                     printMainMenuHeader();
@@ -559,6 +559,14 @@ public class InterestGroup_Client {
         ArrayList<Object> formattedCMD = new ArrayList<>();
         ArrayList<String> cmdTokens = tokenizeCMD(command);
         
+        // not work
+//        User parseUser = new User();
+//        parseUser = user;
+        
+        // work
+//        User parseUser = new User("6666");
+//        formattedCMD.add(parseUser);
+
         formattedCMD.add(state);
         formattedCMD.add(cmdTokens);
         formattedCMD.add(user);
@@ -625,7 +633,7 @@ public class InterestGroup_Client {
         user.subscribeGroup(allGroups.get(--subsIndex));
         System.out.println("You've successfully subscribed to " + allGroups.get(subsIndex));
         // Saves to local user file
-//        dataManager = new DataManager();
+        dataManager = new DataManager();
         dataManager.saveUserData(user);
     }
 
@@ -637,7 +645,7 @@ public class InterestGroup_Client {
         user.unsubscribeGroup(allGroups.get(--subsIndex));
         System.out.println("You've successfully unsubscribed to " + allGroups.get(subsIndex));
         // Saves to local user file
-//        dataManager = new DataManager();
+        dataManager = new DataManager();
         dataManager.saveUserData(user);
     
     }
