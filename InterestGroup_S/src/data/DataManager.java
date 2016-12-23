@@ -20,7 +20,7 @@ import java.text.ParseException;
 
 /**
  *
- * @author Ruoping Lin
+ * @author Ruoping Lin, Jia Sheng Ma
  */
 
 /**
@@ -28,28 +28,19 @@ import java.text.ParseException;
  * server side
  * Every user has a DataManager object for saving and loading his information
  */
-public class DataManager implements Serializable{
+public class DataManager{
     private ArrayList<User>    users;
     private File               userDataFile;
     private User               user;
     private Post               post;
     private String             userID;
     public ArrayList<Post>     allposts;
-    
-    // For IDE
-//    public static final String DEFAULT_PATH = "src/saved/";  
-//    public static final String DEFAULT_PATH_FOLDER = "./src/saved";  
-//    public static final String DISCUSSION_GROUP_LIST_PATH = "src/DiscussionGroupList/";
-//    public static final String DISCUSSION_GROUP_FILENAME = "DiscussionGroupList";
-//    public static final String POST_LIST_PATH = "src/PostList/";
-    
-    // For command line
-    public static final String DEFAULT_PATH = "saved/";  
-    public static final String DEFAULT_PATH_FOLDER = "./saved";  
-    public static final String DISCUSSION_GROUP_LIST_PATH = "DiscussionGroupList/";
+    // For User obj under saved directory
+    public static final String DB_FOLDER_PATH = "../database/";
+    public static final String USER_LIST_PATH = DB_FOLDER_PATH + "UserList/";
+    public static final String DISCUSSION_GROUP_LIST_PATH = DB_FOLDER_PATH + "DiscussionGroupList/";
     public static final String DISCUSSION_GROUP_FILENAME = "DiscussionGroupList";
-//    public static final String POST_LIST_PATH = "src/PostList/";
-    public static final String POST_LIST_PATH = "PostList/";
+    public static final String POST_LIST_PATH = DB_FOLDER_PATH + "PostList/";
     
     public static final String JSON_EXTENSION = ".json";     
     public static final String USER_ID = "USER_ID";
@@ -65,21 +56,6 @@ public class DataManager implements Serializable{
     public static final String SUBJECT = "SUBJECT";
     public static final String CONTENT = "CONTENT";
     
-//    public static void main(String[] args) throws IOException, ParseException {
-//        
-//        DataManager dm = new DataManager();
-//        
-//        // load all posts in java group
-//        ArrayList<Post> posts = new ArrayList<>();
-//        posts = dm.loadAllPosts(Constants.JAVA);
-//        for (int i = 0; i < posts.size(); i++)
-//            System.out.println(posts.get(i).getPostByID());
-//
-//    }
-//    
-    
-    
-    
     public DataManager() throws IOException, ParseException {
         allposts = loadAllPosts();
     }
@@ -93,7 +69,7 @@ public class DataManager implements Serializable{
      * @param user 
      */
     public void saveUserData(User user) {
-        File userFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
+        File userFile = new File(USER_LIST_PATH + user.getId() + JSON_EXTENSION);
         saveUserData(user, userFile.toPath());
     }
     /**
@@ -139,7 +115,7 @@ public class DataManager implements Serializable{
     }
     
     public void loadUserData(User user) throws IOException {
-        File userFile = new File(DEFAULT_PATH + user.getId() + JSON_EXTENSION);
+        File userFile = new File(USER_LIST_PATH + user.getId() + JSON_EXTENSION);
         loadUserData(user, userFile.toPath());
         
     }
@@ -158,11 +134,12 @@ public class DataManager implements Serializable{
         JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));
 
         this.user = (User) user;
-        
+        //System.out.println(loadFrom);
         while(!jsonParser.isClosed()) {
             JsonToken token = jsonParser.nextToken();
             if (JsonToken.FIELD_NAME.equals(token)) {
                 String fieldname = jsonParser.getCurrentName();
+                System.out.println("current file name"+fieldname);
                 switch (fieldname) {
                     case USER_ID:
                         jsonParser.nextToken();
@@ -196,11 +173,11 @@ public class DataManager implements Serializable{
         ArrayList<User> allUsers = new ArrayList<>();
         
         // load all users from data base
-        File folder = new File(DEFAULT_PATH_FOLDER);
+        File folder = new File(USER_LIST_PATH);
         File[] listOfFiles = folder.listFiles();
 
         for (int i = 0; i < listOfFiles.length; i++) {
-            String userFileName = DEFAULT_PATH + listOfFiles[i].getName();
+            String userFileName = USER_LIST_PATH + listOfFiles[i].getName();
             Path userFilePath = Paths.get(userFileName);
 
             // System.out.println(userFileName);
@@ -228,10 +205,12 @@ public class DataManager implements Serializable{
         File folder = new File(POST_LIST_PATH);
         File[] listOfFiles = folder.listFiles();
 
+        //System.out.println("listoffilelength"+listOfFiles.length);
+/*
         for (int i = 0; i < listOfFiles.length; i++) {
             System.out.println(listOfFiles[i].toString());
         }
-        
+ */
         for (int i = 0; i < listOfFiles.length; i++) {
             String postFileName = POST_LIST_PATH + listOfFiles[i].getName();
             Path postFilePath = Paths.get(postFileName);
@@ -257,7 +236,7 @@ public class DataManager implements Serializable{
         ArrayList<Post> allPostsInDB = new ArrayList<>();
         ArrayList<Post> allPosts     = new ArrayList<>();
         allPostsInDB = loadAllPosts();
-        
+        System.out.println("allpostinDB size "+allPostsInDB.size());
         for (Post post: allPostsInDB)
             if (post.getGroupName().equals(groupName))
                 allPosts.add(post);
@@ -278,6 +257,7 @@ public class DataManager implements Serializable{
         JsonParser  jsonParser  = jsonFactory.createParser(Files.newInputStream(loadFrom));
 
         this.post = (Post) post;
+        System.out.println(loadFrom);
         
         while(!jsonParser.isClosed()) {
             JsonToken token = jsonParser.nextToken();
@@ -442,12 +422,6 @@ public class DataManager implements Serializable{
             e.printStackTrace();
         }
     }
-    
-    
-    
 
-    
-    
-    
-    
 }
+

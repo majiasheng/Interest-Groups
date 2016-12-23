@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * enum: states that the client is in
  */
+@SuppressWarnings("serial")
 public final class State implements Serializable {
         // not logged in
 	public static final String NOT_LOGGED_IN = "NOT LOGGED IN";

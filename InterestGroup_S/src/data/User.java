@@ -11,6 +11,7 @@ import java.util.HashSet;
  *
  * @author Ruoping Lin
  */
+@SuppressWarnings("serial")
 public class User implements Serializable{
     private String                  id;               // User is identified by ID
     private File                    userDataFile;     // Loads/Saves this User obj

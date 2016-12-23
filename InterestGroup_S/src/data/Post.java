@@ -14,6 +14,7 @@ import java.util.Date;
  * server side
  * NOTE: A newly created post is marked as UNREAD by the author before he reads it
  */
+@SuppressWarnings("serial")
 public class Post  implements Serializable{
     private String groupName;       // Group that the post belongs to
     private String groupID;         // Do we actually need this? We'll identify groups by their unique names

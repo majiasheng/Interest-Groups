@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 /**
  * Server side
  */
+@SuppressWarnings("unchecked")
 public class InterestGroup_Server {
 
     private static ServerSocket welcomeSocket;  // server socket
@@ -79,18 +80,21 @@ public class InterestGroup_Server {
                     // handles client's request
                     response = handleClientRequest(clientRequest, connectionSocket);
                     // respond to client request
+
+                    // System.out.println("response is NULL????"+ response);
                     output_to_client.writeObject(response);
                 }
             } catch (IOException ex) {
                 // Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("<< FAILED TO CONNECT TO A CLIENT");
-                ex.getCause();
-                ex.printStackTrace();
+                System.out.println("Client: " + this.connectionSocket + " disconnected");
+                // ex.getCause();
+                // ex.printStackTrace();
             } catch (ClassNotFoundException ex) {
                 // Logger.getLogger(InterestGroup_Server.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println("<< ERROR: OBJECT SENT FROM CLIENT CANNOT BE IDENTIFIED");
             } catch (ParseException e) {
-                e.printStackTrace();
+                // e.printStackTrace();
+				
             }
         }
     } /* end of worker server */
@@ -136,26 +140,26 @@ public class InterestGroup_Server {
         User user = (User)clientRequestList.get(2);
 //        dataManager.saveUserData(user);
         /*user = (User)clientRequestList.get(2);*/
-        System.out.println(state+command.get(0)+ " " + user);
+        // System.out.println(state+command.get(0)+ " " + user);
         if(/*state.equals(State.NOT_LOGGED_IN) && */command.get(0).equals(Constants.LOGIN)) {
 
             return(login_handler(command));
 
         } else if(command.get(0).equals(Constants.AG)) {
             // return handler's response (i.e. list of all groups) to client
-            System.out.println(user);
+            // System.out.println(user);
             
             dataManager.saveUserData(user);
             
             return ag_handler();
         } else if(command.get(0).equals(Constants.SG)) {
-            System.out.println("here");
+            // System.out.println("here");
             // return handler's response (i.e. list of all groups) to client
             int argumentLength = command.size();
             int numberOfGroup = 10;
-            System.out.println(argumentLength);
+            // System.out.println(argumentLength);
             if(argumentLength==3&&command.get(1).equals("u")){
-                System.out.print("UUUU");
+                // System.out.print("UUUU");
                 ////////////////////////////////////
                 int indexofgroup=Integer.parseInt(command.get(2));
                 sg_u_handler(indexofgroup,user);
@@ -164,15 +168,17 @@ public class InterestGroup_Server {
             }else {
                 if (argumentLength == 2) {
                     numberOfGroup = Integer.parseInt(command.get(1));
-                    System.out.println("numberOfGroup" + numberOfGroup);
+                    // System.out.println("numberOfGroup" + numberOfGroup);
                 }
+                // System.out.println("user test"+ user.getId());
                 return sg_handler(numberOfGroup, user);
             }
             
         } else if(command.get(0).equals(Constants.RG)) {
-            System.out.println("rg");
+            // System.out.println("rg");
             //TODO: return handler's response to client
             int argumentLength = command.size();
+            // System.out.println("commad"+command.get(1));
             if ((command.get(1).equals("1")) || (command.get(1).equals("2")) || (command.get(1).equals("3")) || (command.get(1).equals("4")) || (command.get(1).equals("5")) || (command.get(1).equals("6")) || (command.get(1).equals("7")) || (command.get(1).equals("8")) || (command.get(1).equals("9"))) {
                 String postId = command.get(2);
                 //rg_id_handler(postId,user);
@@ -181,7 +187,7 @@ public class InterestGroup_Server {
             } else if (command.get(1).equals("r")) {
                 ArrayList<String> range = new ArrayList<String>();
                 int sizeofcmd = (command.size()) - 2;
-                System.out.println(sizeofcmd);
+                // System.out.println(sizeofcmd);
                 for (int i = 0; i < sizeofcmd; i++) {
                     range.add(command.get(2 + i));
                 }
@@ -210,7 +216,7 @@ public class InterestGroup_Server {
                     content=content+command.get(j)+" ";
                 }
                 String group = command.get(jcount);
-                System.out.print(subject + content+group);
+                // System.out.print(subject + content+group);
                 rg_p_handler(subject,content,group, user);
                 return null;
             }else{
@@ -283,6 +289,7 @@ public class InterestGroup_Server {
         } else {
             User newUser = new User(id);
             addUser(id, newUser);
+			dataManager.saveUserData(newUser);
             //TODO: store user to database and server's list of ids_users 
             // dataManager.saveUserData(newUser, DEFAULT_PATH);
             return newUser;
@@ -320,18 +327,18 @@ public class InterestGroup_Server {
         // on client side, we need to check which group has been subscribed
         //gnames_groups_HashMap
         List<List<String>> res = new ArrayList<>();
-        System.out.println(user.getSubscribedGroups().size());
+        // System.out.println(user.getSubscribedGroups().size());
         for(int i=0 ; i<user.getSubscribedGroups().size();i++){
             String groupName = user.getSubscribedGroups().get(i);
             DiscussionGroup group = gnames_groups_HashMap.get(groupName);
-            System.out.println(group.getGroupName());
-            System.out.println("post size"+group.getPosts().size());
+            // System.out.println(group.getGroupName());
+            // System.out.println("post size"+group.getPosts().size());
             int counter = 0;
             //System.out.println("28"+group.getPosts().get(44).getPostID());
             for(int j=0;j<group.getPosts().size();j++){
-                System.out.println("234234234");
+                // System.out.println("234234234");
                 Post post = group.getPosts().get(j);
-                System.out.println("j"+j);
+                // System.out.println("j"+j);
                 //System.out.println(post.getGroupName());
 
                 if(user.getReadPosts().contains(post.getPostByID())==false){
@@ -343,15 +350,15 @@ public class InterestGroup_Server {
             ArrayList<String> temp = new ArrayList<>();
             temp.add(groupName);
             temp.add(Integer.toString(counter));
-            System.out.println(groupName+" "+counter);
-            System.out.println(groupName);
+            // System.out.println(groupName+" "+counter);
+            // System.out.println(groupName);
             res.add(temp);
         }
 
         return res;
     }
     private synchronized static void sg_u_handler(int indexofgroup, User user) throws IOException, ParseException{
-        System.out.println(user.getSubscribedGroups().get(indexofgroup-1));
+        // System.out.println(user.getSubscribedGroups().get(indexofgroup-1));
         user.getSubscribedGroups().remove(indexofgroup-1);
         dataManager = new DataManager();
         dataManager.saveUserData(user);
@@ -374,37 +381,68 @@ public class InterestGroup_Server {
                     temp.add(group.getPosts().get(i).getPostedDate());//0
                     temp.add(group.getPosts().get(i).getPostSubject());//1
                     temp.add(group.getPosts().get(i).getPostByID());//2
-                    temp.add(group.getPosts().get(i).getGroupID());//3
-                    System.out.print(group.getPosts().get(i).getPostedDate());
-                    System.out.println(group.getPosts().get(i).getPostSubject());
+                    temp.add(group.getPosts().get(i).getGroupName());//3
+                    // System.out.print(group.getPosts().get(i).getPostedDate());
+                    // System.out.println(group.getPosts().get(i).getPostSubject());
                     res.add(temp);
                 }
             }
-//            for(int i=0;i<user.getReadPosts().size();i++){
-//                for(int j=0;j<res.size();j++) {
-//                    if (user.getReadPosts().get(i) ==res.get(j).get(2)) {
-//                        res.get(j).add("N");
-//                        System.out.print(res.get(j).get(3));
-//                        System.out.print(res.get(j).get(0));
-//                    }
-//                }
-//            }//end for
+        // System.out.println(user.getReadPosts().size());
+        /*
+            for(int i=0;i<user.getReadPosts().size();i++){
+                System.out.println("current postid"+user.getReadPosts().get(i));
+               for(int j=0;j<res.size();j++) {
 
+                   System.out.println("res postid"+res.get(j).get(2));
+                   if (user.getReadPosts().get(i).equals(res.get(j).get(2))) {
+
+                        //System.out.print(res.get(j).get(3));
+                        //System.out.print(res.get(j).get(0));
+                    }else{
+                       System.out.println("ADD N");
+                       res.get(j).add("N");
+                   }
+                }
+            }
+
+       */
+
+        for(int i = 0;i<res.size();i++){
+            String postid = res.get(i).get(2);
+            if(!user.getReadPosts().contains(postid)){
+                res.get(i).add("N");
+            }
+        }
             return  res;
     }
     
         private synchronized static List<List<String>> rg_id_handler(String postId,User user) throws IOException, ParseException {
-        List<List<String>> res = new ArrayList<>();
-        String con="";
+            List<List<String>> res = new ArrayList<>();
+            String con="";
+            String group = "";
+            String subject = "";
+            String author = "";
+            String date = "";
+
         ArrayList<Post> p = dataManager.allposts;
         for(int i=0;i<p.size();i++){
             if(p.get(i).getPostByID().equals(postId)){
                 con=p.get(i).getPostContent();
+                group = p.get(i).getGroupName();
+                subject = p.get(i).getPostSubject();
+                author = p.get(i).getPostAuthor();
+                date = p.get(i).getPostedDate();
             }
         }
-        System.out.println(" "+con);
+        // System.out.println(" "+con);
         ArrayList<String> temp = new ArrayList<>();
-        temp.add(con);
+
+            temp.add(group);
+            temp.add(subject);
+            temp.add(author);
+            temp.add(date);
+            temp.add(con);
+
         res.add(temp);
         return res;
 
@@ -415,7 +453,7 @@ public class InterestGroup_Server {
         }
         dataManager = new DataManager();
         dataManager.saveUserData(user);
-        System.out.print("hellp");
+        // System.out.print("hellp");
 
     }
     private synchronized static void rg_p_handler(String subject,String content,String group, User user) throws IOException, ParseException {
@@ -430,9 +468,11 @@ public class InterestGroup_Server {
         max=max+1;
         String pid=Integer.toString(max);
     */
+
         Post newpost = new Post();
-        newpost.setPostID("10000");
-        newpost.setGroupID(group);
+        newpost.setPostID("48");
+        newpost.setGroupID("20");
+        newpost.setGroupName(group);
         newpost.setPostAuthor(user.getId());
         newpost.setPostContent(content);
         newpost.setPostSubject(subject);

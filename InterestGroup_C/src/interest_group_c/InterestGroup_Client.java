@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.text.ParseException;
 
 /**
  * client side 
  */
+@SuppressWarnings("unchecked")
 public class InterestGroup_Client {
     private static DataManager dataManager;
     private static String state;            // user state in the session
@@ -51,13 +53,18 @@ public class InterestGroup_Client {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+        // System.out.println("args[0]: " + args[0] + "   args[1]" + args[1]);
         // get hostmachine and port number 
-        // hostmachine = args[1];
-        hostmachine = "localhost";
+        hostmachine = args[0];
+        // hostmachine = "localhost";
         
-        // portnumber = Integer.parseInt(args[2]);
-        portnumber = 6666;
+		try {
+        	portnumber = Integer.parseInt(args[1]);
+		} catch(NumberFormatException nfe) {
+			System.out.println("Usage: java CLASS HOSTMACHINE PORTNUMBER");
+			System.exit(1);
+		}
+        // portnumber = 6666;
         
         // user is not logged in yet 
         state = State.NOT_LOGGED_IN;
@@ -68,7 +75,9 @@ public class InterestGroup_Client {
                 user_input_scn = new Scanner(System.in);
                 // create socket
                 socket = new Socket(hostmachine, portnumber);
-                System.out.println(">> Connected to localhost at 6666\n");
+                System.out.println(">> Connected to " + hostmachine + " at " + portnumber);
+				
+				dataManager = new DataManager();
                 
                 // create socket with hostmachine and portnumber 
                 // Socket socket = new Socket(hostmachine, portnumber);
@@ -127,6 +136,8 @@ public class InterestGroup_Client {
                         if(isCMDValid(command)) {
                             // further validates command (check illegal arguments)
                             if(validateCMD()) {
+                                // System.out.println("entere veaild csm");
+                                // System.out.println("commmmmabd"+command);
                                 output_to_server.writeObject((Object)(formatCMD(command)));
                                 output_to_server.flush();
                             } else {
@@ -142,8 +153,11 @@ public class InterestGroup_Client {
                         get response from server
                      *****************************/
                     // System.out.println(">> Contacting server...");
+                    System.out.println();
+
                     response = input_from_server.readObject();
-                    // System.out.println("200 OK ");
+
+                    // System.out.println("200 OK "+ response);
                     handleServerResponse(response);
                     
                 } while (true);
@@ -152,7 +166,9 @@ public class InterestGroup_Client {
                 System.out.println("<< FAILED TO CONNECT TO HOST");
             } catch(ClassNotFoundException cnf) {
                 cnf.printStackTrace();
-            }
+            } catch(ParseException pe) {
+            	System.out.println("<< error in parsing");
+			}
     }
     
     /**
@@ -181,29 +197,45 @@ public class InterestGroup_Client {
         } else if(cmd.equals(Constants.SG)) {
             int subCmd=0;
             int count=0;
+            int minal = 0;
             if(cmdTokens.size()>1){
                 subCmd = Integer.parseInt(cmdTokens.get(1));
                 count =0;
-                for(int i=0;i<subCmd;i++){
-                    System.out.println((i+1) +".   "+((ArrayList)((ArrayList)response).get(i)).get(1)+ "  " +((ArrayList)((ArrayList)response).get(i)).get(0));
+                int numberOfPostsInList = ((ArrayList)response).size();
+                minal = Math.min(subCmd,numberOfPostsInList);
+                for(int i=0;i<minal;i++){
+                    System.out.println((i+1) +".   "+((ArrayList)((ArrayList)response).get(i)).get(1)
+					+ "  " +((ArrayList)((ArrayList)response).get(i)).get(0));
                     count++;
                 }
             }else{
                 for(int i=0;i<((ArrayList)response).size();i++){
-                    System.out.println((i+1) +".   "+((ArrayList)((ArrayList)response).get(i)).get(1)+ "  " +((ArrayList)((ArrayList)response).get(i)).get(0));
+                    System.out.println((i+1) +".   "+((ArrayList)((ArrayList)response).get(i)).get(1)
+					+ "  " +((ArrayList)((ArrayList)response).get(i)).get(0));
                 }
             }
             System.out.println();
-            sg_mode((ArrayList)response,count,subCmd);
+            sg_mode((ArrayList)response,count,minal);
         } else if(cmd.equals(Constants.RG)) {
-            for(int i=0;i<((ArrayList)response).size();i++){
-                if(((ArrayList) ((ArrayList) response).get(i)).size()==4){
-                    System.out.println((i + 1) + "." + ((ArrayList) ((ArrayList) response).get(i)).get(3)+"   "+((ArrayList) ((ArrayList) response).get(i)).get(0) + "  " + ((ArrayList) ((ArrayList) response).get(i)).get(1));
+
+            int userInputSize = 5;
+            int count =0;
+            if(cmdTokens.size()==3) {
+                userInputSize = Integer.parseInt(cmdTokens.get(2));
+            }
+            int minal = Math.min(userInputSize,((ArrayList)response).size());
+            for(int i=0;i<minal;i++){
+                if(((ArrayList) ((ArrayList) response).get(i)).size()==5){
+                    System.out.println((i + 1) + "." + ((ArrayList) ((ArrayList) response).get(i)).get(4)
+					+"   "+((ArrayList) ((ArrayList) response).get(i)).get(0) + "  " 
+					+ ((ArrayList) ((ArrayList) response).get(i)).get(1));
                 }else {
                     System.out.println((i + 1) + ".      " + ((ArrayList) ((ArrayList) response).get(i)).get(0) + "  " + ((ArrayList) ((ArrayList) response).get(i)).get(1));
                 }
+                count++;
             }
-            rg_mode((ArrayList)response);
+
+            rg_mode((ArrayList)response,count,minal);
         } else if(cmd.equals(Constants.LOGIN)) {            
             handleLoginResponse();
         } 
@@ -222,7 +254,7 @@ public class InterestGroup_Client {
      * Helper method: in case N is not given by the user
      * @param response 
      */
-    private static void ag_mode(ArrayList response) throws IOException {
+    private static void ag_mode(ArrayList response) throws IOException, ClassNotFoundException {
         ag_mode(response, Constants.N);
     }
     
@@ -234,7 +266,7 @@ public class InterestGroup_Client {
      * u: unsubscribe to group(s)
      * n: display N groups at a time. if N is not specified, use a default number
      */
-    private static void ag_mode(ArrayList response, int n) throws IOException {
+    private static void ag_mode(ArrayList response, int n) throws IOException, ClassNotFoundException {
         System.out.println("################################");
         System.out.println("#          all groups          #");
         System.out.println("################################");
@@ -352,6 +384,7 @@ public class InterestGroup_Client {
                         }
                         output_to_server.writeObject((Object)(formatCMD("ag u" + user)));
                         output_to_server.flush();
+						input_from_server.readObject();
                     }
                     
                 } else {
@@ -410,7 +443,10 @@ public class InterestGroup_Client {
                 break;
             } else if(cmd.equals("n")){
                     //sg_handler(cmd);
+                System.out.println("response Size"+response.size());
+                System.out.println("count "+ count);
                 if(response.size()!=(count)) {
+                    subCmd = Math.min(response.size()-count,subCmd);
                     for (int i = 0; i < subCmd; i++) {
                         System.out.println((count + 1) + ".   " + ((ArrayList) ((ArrayList) response).get(count)).get(1) + "  " + ((ArrayList) ((ArrayList) response).get(count)).get(0));
                         count++;
@@ -436,7 +472,7 @@ public class InterestGroup_Client {
     /**
      * Enables sub commands available under "rg"
      */
-    private static void rg_mode(ArrayList response) throws IOException, ClassNotFoundException {
+    private static void rg_mode(ArrayList response, int count , int subCmd) throws IOException, ClassNotFoundException {
         
         /* if server returns null, i.e. no such group exist, 
            then give feedback to user
@@ -469,45 +505,37 @@ public class InterestGroup_Client {
             command = user_input_scn.nextLine();
             cmdTokens = tokenizeCMD(command);
             String cmd = cmdTokens.get(0);
-            
+
             if(cmd.equals("q")) {
                 printMainMenuHeader();
                 state = State.LOGGED_IN;
                 break;
             }
-            else if(cmd.equals("1")||cmd.equals("2")||cmd.equals("3")||cmd.equals("4")||cmd.equals("5")||cmd.equals("6")||cmd.equals("7")||cmd.equals("8")||cmd.equals("9")){
-                String subbCmd = cmdTokens.get(0);
-                output_to_server.writeObject((Object)(formatCMD("rg "+subbCmd+" "+((ArrayList)(response.get(Integer.parseInt(cmd)))).get(2))));
-                output_to_server.flush();
-                Object imput = input_from_server.readObject();
-                System.out.println(((ArrayList)((ArrayList)imput).get(0)).get(0));
-                int postid = Integer.parseInt(cmd);
-                id_handler_rg(postid, N);
 
-            }
             //TODO: the subcommand can be a number as an id, if it is a number, 
             // a sub sub command interface should be displayed
             else if(cmd.equals("r") || cmd.equals("n") || cmd.equals("p")) {
                if(validateSubCMD()) {
-                    //rrrrrrrrr
-                    String subbCmd = cmdTokens.get(1);
-                    ArrayList<String> range =new ArrayList<String>();
-                    String commd="rg "+cmd;
-                    if(subbCmd.length()>1){
-                     //a range
-                        int min = Integer.parseInt(String.valueOf(subbCmd.charAt(0)));
-                        int max = Integer.parseInt(String.valueOf(subbCmd.charAt(2)));
-                        for(int i=min;i<=max;i++){
-                            range.add((String)((ArrayList)((ArrayList)response).get(i-1)).get(2));
-                            commd=commd+" "+range.get(i-1);
-                        }
-                    }else{
-                        range.add((String)((ArrayList)((ArrayList)response).get(Integer.parseInt(subbCmd))).get(2));
-                        commd=commd+" "+range.get(0);
-                    }
-                    output_to_server.writeObject((Object)(formatCMD(commd)));
-                    output_to_server.flush();
-
+                   if(cmd.equals("r")) {
+                       //rrrrrrrrr
+                       String subbCmd = cmdTokens.get(1);
+                       ArrayList<String> range = new ArrayList<String>();
+                       String commd = "rg " + cmd;
+                       if (subbCmd.length() > 1) {
+                           //a range
+                           int min = Integer.parseInt(String.valueOf(subbCmd.charAt(0)));
+                           int max = Integer.parseInt(String.valueOf(subbCmd.charAt(2)));
+                           for (int i = min; i <= max; i++) {
+                               range.add((String) ((ArrayList) ((ArrayList) response).get(i - 1)).get(2));
+                               commd = commd + " " + range.get(i - 1);
+                           }
+                       } else {
+                           range.add((String) ((ArrayList) ((ArrayList) response).get(Integer.parseInt(subbCmd))).get(2));
+                           commd = commd + " " + range.get(0);
+                       }
+                       output_to_server.writeObject((Object) (formatCMD(commd)));
+                       output_to_server.flush();
+                   }
                     rg_handler(cmd, N);
                // } else {
                     //TODO:
@@ -521,13 +549,53 @@ public class InterestGroup_Client {
                    System.out.println(subject+content);
                    output_to_server.writeObject((Object)(formatCMD("rg p "+subject+" "+content+" "+((ArrayList)(response.get(0))).get(3))));
                    output_to_server.flush();
+                   Object input = input_from_server.readObject();
+
+
+               }else if(cmd.equals("n")){
+                   //sg_handler(cmd);
+                   System.out.println("response Size"+response.size());
+                   System.out.println("count "+ count);
+                   if(response.size()!=(count)) {
+                       subCmd = Math.min(response.size()-count,subCmd);
+                       for (int i = 0; i < subCmd; i++) {
+                           if(((ArrayList) ((ArrayList) response).get(i)).size()==5){
+                               System.out.println((i + 1) + "." + ((ArrayList) ((ArrayList) response).get(i)).get(4)+"   "+((ArrayList) ((ArrayList) response).get(i)).get(0) + "  " + ((ArrayList) ((ArrayList) response).get(i)).get(1));
+                           }else {
+                               System.out.println((i + 1) + ".      " + ((ArrayList) ((ArrayList) response).get(i)).get(0) + "  " + ((ArrayList) ((ArrayList) response).get(i)).get(1));
+                           }
+                           count++;
+                       }
+                   }else{
+                       System.out.println("reach end of the list");
+                   }
 
                }
             } else {
                 try {
                     int postid = Integer.parseInt(cmd);
                     //TODO: print id sub sub command header
+
+
+                    String subbCmd = cmdTokens.get(0);
+                    output_to_server.writeObject((Object)(formatCMD("rg "+subbCmd+" "+((ArrayList)(response.get(Integer.parseInt(cmd)))).get(2))));
+                    output_to_server.flush();
+                    Object imput = input_from_server.readObject();
+                    System.out.println("Group: "+((ArrayList)((ArrayList)imput).get(0)).get(0));
+                    System.out.println("Subject: "+((ArrayList)((ArrayList)imput).get(0)).get(1));
+                    System.out.println("Author: "+((ArrayList)((ArrayList)imput).get(0)).get(2));
+                    System.out.println("Date: "+((ArrayList)((ArrayList)imput).get(0)).get(3));
+                    System.out.println(((ArrayList)((ArrayList)imput).get(0)).get(4));
+
+                    //loint postid = Integer.parseInt(cmd);
                     id_handler_rg(postid, N);
+
+
+
+
+
+
+                    //id_handler_rg(postid, N);
                 } catch(NumberFormatException nfe) {
                     System.out.println("ERROR: NO SUCH COMMAND");
                     printSubCMDMenu_RG();
@@ -564,13 +632,13 @@ public class InterestGroup_Client {
 //        parseUser = user;
         
         // work
-//        User parseUser = new User("888");
+//        User parseUser = new User(user.getId());
 //        formattedCMD.add(parseUser);
 
         formattedCMD.add(state);
         formattedCMD.add(cmdTokens);
         formattedCMD.add(user);
-        System.out.println(user.getSubscribedGroups().toArray().toString());
+
         
         return formattedCMD;
     }
@@ -584,6 +652,7 @@ public class InterestGroup_Client {
         /*TODO: store user info locally (if user data already exists, 
         overwrite it)*/
         user = (User)response;
+        dataManager.saveUserData(user);
 
         System.out.println("<< Logged successfully into server");
     }
@@ -633,7 +702,7 @@ public class InterestGroup_Client {
         user.subscribeGroup(allGroups.get(--subsIndex));
         System.out.println("You've successfully subscribed to " + allGroups.get(subsIndex));
         // Saves to local user file
-//        dataManager = new DataManager();
+        // dataManager = new DataManager();
         dataManager.saveUserData(user);
     }
 
@@ -645,7 +714,7 @@ public class InterestGroup_Client {
         user.unsubscribeGroup(allGroups.get(--subsIndex));
         System.out.println("You've successfully unsubscribed to " + allGroups.get(subsIndex));
         // Saves to local user file
-        dataManager = new DataManager();
+        // dataManager = new DataManager();
         dataManager.saveUserData(user);
     
     }

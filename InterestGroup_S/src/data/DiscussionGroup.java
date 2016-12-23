@@ -17,6 +17,7 @@ import java.util.ArrayList;
  * A list of discussion group is stored in DiscussionGroupList.json 
  * and group names are in Constants class
  */
+@SuppressWarnings("serial")
 public class DiscussionGroup implements Serializable{
 
         private String          groupName;      // Every group is identified by its unique group name
@@ -70,10 +71,10 @@ public class DiscussionGroup implements Serializable{
             posts = new ArrayList<>();
             
             // Loads all posts from data base (group name must be known)
-            if (this.groupID != null)
-                posts = dataManager.loadAllPosts(this.groupID);
+            if (this.groupName != null)
+                posts = dataManager.loadAllPosts(this.groupName);
             else 
-                System.out.println("Group ID is empty");
+                System.out.println("Group nama is empty");
             return posts;
         }
         

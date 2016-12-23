@@ -16,24 +16,25 @@ import java.util.ArrayList;
  * A list of discussion group is stored in DiscussionGroupList.json 
  * and group names are in Constants class
  */
+@SuppressWarnings("serial")
 public class DiscussionGroup implements Serializable{
 
         private String          groupName;      // Every group is identified by its unique group name
 	private String          groupID;        // Do we actually need this?
 
         private ArrayList<Post> posts;          // Posts under this group
-        private DataManager     dataManager;
+        // private DataManager     dataManager;
         
 	public DiscussionGroup() {
             
             groupName = null;              
-            dataManager = new DataManager();
+            // dataManager = new DataManager();
 	}
         
         public DiscussionGroup(String groupName) {
             
             this.groupName = groupName;
-            dataManager = new DataManager();
+            // dataManager = new DataManager();
         }
 
         /**
@@ -66,13 +67,13 @@ public class DiscussionGroup implements Serializable{
          */
         public ArrayList<Post> getPosts() throws IOException, ParseException {
             posts = new ArrayList<>();
-            
-            // Loads all posts from data base (group name must be known)
-            if (this.groupID != null)
-                posts = dataManager.loadAllPosts(this.groupID);
-            else 
-                System.out.println("Group ID is empty");
-            
+                        //
+            // // Loads all posts from data base (group name must be known)
+            // if (this.groupName != null)
+            //     posts = dataManager.loadAllPosts(this.groupName);
+            // else
+            //     System.out.println("Group Name is empty");
+            //
             return posts;
         }
         
