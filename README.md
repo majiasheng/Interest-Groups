@@ -3,7 +3,9 @@ Using the Internet domain sockets, Interest Groups implements a network applicat
 
 > CSE 310 [Computer Networks](https://www.cs.stonybrook.edu/students/Undergraduate-Studies/courses/CSE310) course project
 
-Authors: [Liwen Fan](https://github.com/liwenwenwen) 	[Jia Sheng Ma](https://github.com/majiasheng) 	[Melanie Lin](https://github.com/melanie0926)
+Authors: [Liwen Fan](https://github.com/liwenwenwen)
+		 [Jia Sheng Ma](https://github.com/majiasheng) 	
+		 [Melanie Lin](https://github.com/melanie0926)
 
 # Table of Contents
 * [What it does](#intro)
