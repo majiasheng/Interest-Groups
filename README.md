@@ -24,31 +24,29 @@ The implementation consists of a client program and a server program. The client
 
 ## Documentation <a id="documentation"> </a>
 
-#### Quick Start
+### Quick Start
 
-Browse to the server folder 
+**Browse to the server folder**
 
 `$ cd InterestGroup_S/`
 
-Create a new build folder
+**Create a new build folder**
 
 `$ mkdir build`
 
-Compile with
+**Compile with**
 
 `$ javac src/*/*.java -d build/ -cp lib/jackson-core-2.8.2.jar:.`
 
-Browse to the build folder
+**Browse to the build folder**
 
 `$ cd build`
 
-Run the project with
+**Run the project with**
 
-`$ java -classpath ../lib/jackson-core-2.8.2.jar:.
+`$ java -classpath ../lib/jackson-core-2.8.2.jar:. interest_group_s.InterestGroup_Server HOSTMACHINE PORTNUMBER`
 
-interest_group_s.InterestGroup_Server HOSTMACHINE PORTNUMBER`
-
-#### More Information
+### More Information
 
 * [System Documentation](https://github.com/melanie0926/Interest-Groups/files/671443/System.Documentation.pdf)
 * [Testing Documentation](https://github.com/melanie0926/Interest-Groups/files/671444/Testing.Documentation.pdf)
