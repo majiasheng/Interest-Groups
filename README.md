@@ -36,7 +36,7 @@ The implementation consists of a client program and a server program. The client
 
 **Compile with**
 
-`$ javac src/*/*.java -d build/ -cp lib/jackson-core-2.8.2.jar:.`
+`$ javac -cp lib/jackson-core-2.8.2.jar:. src/*/*.java -d build/`
 
 **Browse to the build folder**
 
@@ -44,7 +44,7 @@ The implementation consists of a client program and a server program. The client
 
 **Run the project with**
 
-`$ java -classpath ../lib/jackson-core-2.8.2.jar:. interest_group_s.InterestGroup_Server HOSTMACHINE PORTNUMBER`
+`$ java -cp ../lib/jackson-core-2.8.2.jar:. interest_group_s.InterestGroup_Server HOSTMACHINE PORTNUMBER`
 
 ### More Information
 
